@@ -1,0 +1,2679 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flame in microgravity // Space Combustion Research Repository</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            space: {
+              950: '#03060e',
+              900: '#070c1c',
+              800: '#0d162e',
+              700: '#162447',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #03060e;
+      color: #f1f5f9;
+      overflow-x: hidden;
+    }
+
+    /* High-Mobility Layered Silk & Neon-Blue Plasma Background */
+    .silk-plasma-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      background: radial-gradient(circle at 20% 15%, #07122b 0%, #03060e 58%, #010308 100%);
+    }
+
+    .silk-ribbon-layer {
+      position: absolute;
+      inset: -25%;
+      width: 150%;
+      height: 150%;
+      filter: blur(22px) saturate(140%);
+      opacity: 0.92;
+      animation: silkWaveFlow 13s ease-in-out infinite alternate;
+      pointer-events: none;
+      will-change: transform;
+    }
+
+    .silk-ribbon-layer-secondary {
+      position: absolute;
+      inset: -25%;
+      width: 150%;
+      height: 150%;
+      filter: blur(34px) saturate(155%);
+      opacity: 0.72;
+      mix-blend-mode: screen;
+      animation: silkWaveCounter 16s ease-in-out infinite alternate;
+      pointer-events: none;
+      will-change: transform;
+    }
+
+    @keyframes silkWaveFlow {
+      0% {
+        transform: translate3d(-4%, -3%, 0) scale(1.04) rotate(-1.5deg);
+      }
+      50% {
+        transform: translate3d(3.5%, 2.5%, 0) scale(1.1) rotate(1.8deg);
+      }
+      100% {
+        transform: translate3d(-2.5%, 4%, 0) scale(1.06) rotate(-1.2deg);
+      }
+    }
+
+    @keyframes silkWaveCounter {
+      0% {
+        transform: translate3d(4%, 3%, 0) scale(1.08) rotate(2deg);
+      }
+      50% {
+        transform: translate3d(-3.5%, -2%, 0) scale(1.02) rotate(-1.8deg);
+      }
+      100% {
+        transform: translate3d(2.5%, -3.5%, 0) scale(1.1) rotate(1.4deg);
+      }
+    }
+
+    /* Readability vignette & subtle telemetry grid */
+    .bg-readability-vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 50% 45%, rgba(3, 7, 18, 0.34) 0%, rgba(2, 5, 14, 0.76) 100%),
+        linear-gradient(180deg, rgba(3, 6, 15, 0.48) 0%, rgba(3, 6, 15, 0.28) 50%, rgba(3, 6, 15, 0.68) 100%);
+    }
+
+    .telemetry-grid {
+      background-size: 46px 46px;
+      background-image: 
+        linear-gradient(to right, rgba(0, 229, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 229, 255, 0.05) 1px, transparent 1px);
+    }
+
+    /* Glassmorphic Space Cards */
+    .space-card {
+      background: linear-gradient(155deg, rgba(9, 16, 34, 0.78) 0%, rgba(5, 10, 22, 0.88) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(56, 189, 248, 0.22);
+      box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.7);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.3s ease,
+                  box-shadow 0.35s ease;
+    }
+
+    .space-card:hover {
+      border-color: rgba(0, 240, 255, 0.7);
+      transform: translateY(-6px) scale(1.01);
+      box-shadow:
+        0 20px 42px -10px rgba(0, 175, 255, 0.34),
+        0 0 28px -4px rgba(251, 146, 60, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.16);
+    }
+
+    /* Staggered Entrance Animations */
+    @keyframes cosmicEntrance {
+      0% {
+        opacity: 0;
+        transform: translateY(26px) scale(0.95);
+        filter: blur(8px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+      }
+    }
+
+    .animate-entrance {
+      opacity: 0;
+    }
+
+    .dashboard-ready .animate-entrance {
+      animation: cosmicEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .card-stagger {
+      opacity: 0;
+      animation: cosmicEntrance 0.58s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Shimmer & Arrow Slide Button Effects */
+    .neon-link-btn {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .neon-link-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -110%;
+      width: 70%;
+      height: 100%;
+      background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255, 255, 255, 0.55),
+        transparent
+      );
+      transition: left 0.55s ease;
+    }
+
+    .neon-link-btn:hover::before {
+      left: 145%;
+    }
+
+    .neon-link-btn:hover {
+      box-shadow: 0 0 22px rgba(0, 229, 255, 0.65);
+      transform: translateY(-1.5px);
+    }
+
+    .neon-link-btn:active {
+      transform: scale(0.96);
+    }
+
+    .neon-link-btn .arrow-icon {
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .neon-link-btn:hover .arrow-icon {
+      transform: translate(3px, -3px);
+    }
+
+    /* Warp Toast Feedback */
+    @keyframes warpPulseOverlay {
+      0% {
+        opacity: 0;
+        transform: translateY(12px) scale(0.9);
+      }
+      20% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      85% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-8px) scale(1.04);
+      }
+    }
+
+    .warp-toast-active {
+      animation: warpPulseOverlay 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Modal Transitions */
+    @keyframes modalBackdropIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes modalCardIn {
+      0% {
+        opacity: 0;
+        transform: translateY(22px) scale(0.94);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .modal-backdrop-anim {
+      animation: modalBackdropIn 0.25s ease-out forwards;
+    }
+
+    .modal-card-anim {
+      animation: modalCardIn 0.34s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Detail page: slides in from the right */
+    #studyModal {
+      background:
+        radial-gradient(900px 520px at 88% -8%, rgba(251, 146, 60, 0.22), transparent 62%),
+        radial-gradient(820px 620px at 0% 18%, rgba(34, 211, 238, 0.22), transparent 62%),
+        radial-gradient(900px 700px at 62% 112%, rgba(59, 130, 246, 0.28), transparent 62%),
+        linear-gradient(160deg, #123058 0%, #0e2549 48%, #16264a 100%);
+      transform: translateX(100%);
+      visibility: hidden;
+      box-shadow: -24px 0 48px -16px rgba(0, 0, 0, 0.8);
+      transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.75s;
+    }
+    #studyModal.open {
+      transform: translateX(0);
+      visibility: visible;
+      transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #studyModal, #studyModal.open { transition: none; }
+    }
+
+    /* Flamita: avatar, intro stage and chat widget */
+    @keyframes flamitaFloat { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-9px) rotate(2deg); } }
+    @keyframes flamitaBlink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+    .flamita-float { animation: flamitaFloat 7s ease-in-out infinite; }
+    .flamita-eyes { transform-box: fill-box; transform-origin: center; animation: flamitaBlink 5s infinite; }
+    .flamita-appear { opacity: 0; transform: scale(0.3); transition: opacity 0.9s ease, transform 1.1s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .flamita-appear.show { opacity: 1; transform: scale(1); }
+    .flamita-bubble { opacity: 0; visibility: hidden; transform: translateY(14px); transition: opacity 0.8s ease, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.8s; }
+    .flamita-bubble.show { opacity: 1; visibility: visible; transform: none; transition: opacity 0.8s ease, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s; }
+    .flamita-level.selected { border-color: rgba(251, 146, 60, 0.8); background: rgba(251, 146, 60, 0.18); }
+    .flamita-level:disabled:not(.selected) { opacity: 0.4; cursor: default; }
+    details[open] > summary .fold-arrow { transform: rotate(90deg); }
+    details > summary::-webkit-details-marker { display: none; }
+
+    /* The widget box covers the bottom-right corner even with the chat closed: it must let clicks through.
+       Only the Flamita button and the open panel take clicks. */
+    #chatWidget { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.9s ease, visibility 0s linear 0.9s; }
+    #chatLauncher { pointer-events: auto; }
+
+    /* Investigation page: slides side by side instead of one long page */
+    .page-slide { width: 100%; height: 100%; flex-shrink: 0; overflow-y: auto; }
+    .page-slide-box { max-width: 64rem; margin: 0 auto; padding: 1.5rem 1rem 6rem; min-height: 100%; }
+    @media (min-width: 640px) { .page-slide-box { padding: 2rem 1.5rem 6rem; } }
+    @media (prefers-reduced-motion: reduce) { #slideTrack { transition: none; } }
+    #chatWidget.visible { opacity: 1; visibility: visible; transition: opacity 0.9s ease, visibility 0s; }
+    #chatPanel {
+      opacity: 0; transform: translateY(16px) scale(0.97); transform-origin: bottom right;
+      visibility: hidden; pointer-events: none;
+      transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.5s;
+    }
+    #chatPanel.open { opacity: 1; transform: none; visibility: visible; pointer-events: auto; transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s; }
+    #chatHint { opacity: 0; transition: opacity 0.6s ease; pointer-events: none; }
+    #chatHint.show { opacity: 1; }
+    @media (prefers-reduced-motion: reduce) {
+      .flamita-float, .flamita-eyes { animation: none; }
+      .flamita-appear, .flamita-bubble, #chatWidget, #chatPanel, #chatPanel.open { transition: none; }
+    }
+
+    /* Zero-G Spherical Flame Emblem */
+    @keyframes zeroGFlamePulse {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 
+          0 0 22px 6px rgba(0, 229, 255, 0.85),
+          0 0 44px 14px rgba(0, 110, 255, 0.5),
+          0 0 64px 18px rgba(251, 146, 60, 0.34),
+          inset 0 0 15px rgba(255, 255, 255, 0.98);
+      }
+      50% {
+        transform: scale(1.1);
+        box-shadow: 
+          0 0 32px 9px rgba(0, 245, 255, 0.98),
+          0 0 56px 18px rgba(0, 130, 255, 0.62),
+          0 0 80px 24px rgba(249, 115, 22, 0.45),
+          inset 0 0 20px rgba(255, 255, 255, 1);
+      }
+    }
+
+    .zero-g-sphere {
+      background: radial-gradient(circle at 38% 38%, #ffffff 0%, #a5f3fc 25%, #0099ff 58%, #fb923c 90%, transparent 100%);
+      animation: zeroGFlamePulse 3.6s ease-in-out infinite;
+    }
+
+    /* Cinematic Intro Overlay Fade */
+    #introVideoOverlay {
+      transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.85s ease;
+    }
+
+    #introVideoOverlay.intro-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #03060e;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00e5ff;
+    }
+  </style>
+</head>
+<body class="min-h-screen telemetry-grid relative selection:bg-cyan-400/30 selection:text-cyan-100">
+
+  <!-- ===================================================================== -->
+  <!-- CINEMATIC ENTRY VIDEO SEQUENCE: ROCKET ASCENT -> ZERO-G SPHERICAL FLAME -->
+  <!-- ===================================================================== -->
+  <!-- Flamita avatar (reused in the intro, the chat button and the chat panel) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <radialGradient id="flamitaBodyGrad" cx="38%" cy="34%" r="75%">
+        <stop offset="0" stop-color="#ffffff" />
+        <stop offset="0.28" stop-color="#a5f3fc" />
+        <stop offset="0.62" stop-color="#0ea5e9" />
+        <stop offset="0.92" stop-color="#fb923c" />
+        <stop offset="1" stop-color="#fb923c" stop-opacity="0" />
+      </radialGradient>
+    </defs>
+    <symbol id="flamita" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="46" fill="url(#flamitaBodyGrad)" />
+      <circle cx="50" cy="50" r="44" fill="none" stroke="#e0f2fe" stroke-opacity="0.5" stroke-width="1.2" />
+      <g class="flamita-eyes">
+        <ellipse cx="37" cy="46" rx="5" ry="7" fill="#0b1b3a" />
+        <ellipse cx="63" cy="46" rx="5" ry="7" fill="#0b1b3a" />
+        <circle cx="38.8" cy="43.2" r="1.8" fill="#ffffff" />
+        <circle cx="64.8" cy="43.2" r="1.8" fill="#ffffff" />
+      </g>
+      <path d="M38 62 Q50 73 62 62" fill="none" stroke="#0b1b3a" stroke-width="3" stroke-linecap="round" />
+      <circle cx="27" cy="58" r="5" fill="#fb923c" fill-opacity="0.55" />
+      <circle cx="73" cy="58" r="5" fill="#fb923c" fill-opacity="0.55" />
+    </symbol>
+  </svg>
+
+  <div id="introVideoOverlay" class="fixed inset-0 z-[100] bg-[#02040a] flex flex-col items-center justify-center overflow-hidden">
+    <canvas id="introSequenceCanvas" class="absolute inset-0 w-full h-full"></canvas>
+
+    <!-- Flamita appears here after the rocket explodes -->
+    <div id="flamitaStage" class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 px-4 pt-14 pb-24 pointer-events-none">
+      <div id="flamitaAvatar" class="flamita-appear w-28 h-28 sm:w-40 sm:h-40 shrink-0">
+        <svg class="w-full h-full flamita-float" style="filter: drop-shadow(0 0 22px rgba(0, 229, 255, 0.55));"><use href="#flamita" /></svg>
+      </div>
+      <div id="flamitaBubble" class="flamita-bubble w-full max-w-xl rounded-2xl border border-cyan-400/35 bg-slate-950/80 backdrop-blur-md px-4 sm:px-5 py-4 text-center pointer-events-auto">
+        <div class="text-xs font-mono text-cyan-300 mb-1">Flamita · your guide</div>
+        <p id="flamitaSpeech" class="text-slate-100 text-sm sm:text-base leading-relaxed min-h-[4.2rem]"></p>
+        <div id="flamitaLevels" class="grid grid-cols-3 gap-2 mt-3">
+          <button data-level="beginner" class="flamita-level rounded-xl border border-cyan-400/35 bg-slate-900/80 hover:bg-cyan-500/15 px-2 sm:px-3 py-2 transition">
+            <span class="block text-sm font-semibold text-white">Beginner</span><span class="hidden sm:block text-[11px] text-slate-400">New to this</span>
+          </button>
+          <button data-level="intermediate" class="flamita-level rounded-xl border border-cyan-400/35 bg-slate-900/80 hover:bg-cyan-500/15 px-2 sm:px-3 py-2 transition">
+            <span class="block text-sm font-semibold text-white">Intermediate</span><span class="hidden sm:block text-[11px] text-slate-400">I know the basics</span>
+          </button>
+          <button data-level="advanced" class="flamita-level rounded-xl border border-cyan-400/35 bg-slate-900/80 hover:bg-cyan-500/15 px-2 sm:px-3 py-2 transition">
+            <span class="block text-sm font-semibold text-white">Advanced</span><span class="hidden sm:block text-[11px] text-slate-400">I work with combustion or data</span>
+          </button>
+        </div>
+        <div class="mt-3 pt-3 border-t border-slate-800/90 text-left">
+          <div class="text-xs font-mono text-orange-300 mb-1">Did you know?</div>
+          <p id="flamitaTipText" class="text-xs sm:text-sm text-slate-300 leading-relaxed min-h-[2.6rem] transition-opacity duration-300"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- HUD Telemetry Overlay during Intro Video -->
+    <div class="relative z-10 pointer-events-none flex flex-col items-center justify-between h-full w-full max-w-5xl px-6 py-10">
+      <div class="w-full flex items-center justify-between text-xs font-mono text-cyan-300/80 tracking-widest">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+          <span>ORBITAL IGNITION FEED // CAM-01</span>
+        </div>
+        <span id="introGravityTelemetry">G-FORCE: 1.00 g → 0.00 g</span>
+      </div>
+
+      <!-- Center Title Reveal during Flame Morph -->
+      <div id="introCenterCallout" class="text-center transition-all duration-700 transform translate-y-2 opacity-90 mt-auto mb-14">
+        <div id="introPhaseBadge" class="inline-block px-3.5 py-1 rounded-full bg-cyan-500/15 border border-cyan-400/40 text-cyan-200 text-xs font-mono tracking-widest uppercase mb-3">
+          STAGE 01 // ORBITAL ASCENT THRUST
+        </div>
+        <h2 class="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white drop-shadow-[0_0_28px_rgba(0,229,255,0.55)]">
+          Flame in <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-300 to-orange-300">microgravity</span>
+        </h2>
+        <p id="introSubCaption" class="text-xs sm:text-sm font-mono text-slate-300 mt-2 tracking-wide">
+          TRANSITIONING TO BUOYANCY-FREE SPHERICAL COMBUSTION...
+        </p>
+      </div>
+
+      <!-- Progress Bar & Skip Action -->
+      <div class="w-full flex flex-col sm:flex-row items-center justify-between gap-4 pointer-events-auto">
+        <div class="w-full sm:w-72 bg-slate-900/90 border border-cyan-500/30 rounded-full h-1.5 overflow-hidden">
+          <div id="introProgressBar" class="h-full bg-gradient-to-r from-orange-400 via-cyan-400 to-blue-500 w-0 transition-all duration-75"></div>
+        </div>
+
+        <button
+          id="skipIntroBtn"
+          class="px-5 py-2 rounded-xl bg-slate-950/85 hover:bg-cyan-500/20 text-cyan-200 border border-cyan-400/45 text-xs font-mono uppercase tracking-wider transition flex items-center gap-2 cursor-pointer shadow-[0_0_20px_rgba(0,229,255,0.2)]"
+        >
+          <span>Enter Dashboard</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- HIGH-MOBILITY BACKGROUND: SILK WAVES (CREAM/AMBER + NEON BLUE) + CANVAS -->
+  <!-- ===================================================================== -->
+  <div class="silk-plasma-bg" aria-hidden="true">
+    <!-- Primary Silk Wave Ribbon SVG -->
+    <svg id="primarySilkSvg" class="silk-ribbon-layer" viewBox="0 0 1440 900" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="warmCreamRibbon" x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#fff3e4" stop-opacity="0.78" />
+          <stop offset="35%" stop-color="#f7b98f" stop-opacity="0.68" />
+          <stop offset="70%" stop-color="#dc7b63" stop-opacity="0.52" />
+          <stop offset="100%" stop-color="#060c1f" stop-opacity="0.1" />
+        </linearGradient>
+
+        <linearGradient id="amberSilkRibbon" x1="10%" y1="90%" x2="90%" y2="10%">
+          <stop offset="0%" stop-color="#ffd9ba" stop-opacity="0.64" />
+          <stop offset="45%" stop-color="#e37c5e" stop-opacity="0.58" />
+          <stop offset="80%" stop-color="#803b35" stop-opacity="0.48" />
+          <stop offset="100%" stop-color="#030712" stop-opacity="0.2" />
+        </linearGradient>
+
+        <!-- Electric Neon Blue Gradient (replacing purple) -->
+        <linearGradient id="neonBlueRibbon" x1="0%" y1="85%" x2="100%" y2="15%">
+          <stop offset="0%" stop-color="#00f5ff" stop-opacity="0.78" />
+          <stop offset="35%" stop-color="#0088ff" stop-opacity="0.82" />
+          <stop offset="72%" stop-color="#0044dd" stop-opacity="0.72" />
+          <stop offset="100%" stop-color="#020817" stop-opacity="0.3" />
+        </linearGradient>
+
+        <linearGradient id="cyanCoreRibbon" x1="20%" y1="100%" x2="85%" y2="0%">
+          <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.45" />
+          <stop offset="50%" stop-color="#00eeff" stop-opacity="0.82" />
+          <stop offset="100%" stop-color="#0055ff" stop-opacity="0.5" />
+        </linearGradient>
+      </defs>
+
+      <path d="M-200,820 C180,780 420,260 980,80 C1240,0 1480,40 1640,120 L1640,980 L-200,980 Z" fill="url(#warmCreamRibbon)" />
+      <path d="M-180,920 C240,860 510,360 1080,160 C1320,80 1520,140 1660,240 L1660,1020 L-180,1020 Z" fill="url(#amberSilkRibbon)" />
+      <path d="M-100,980 C340,910 620,460 1160,270 C1380,195 1560,260 1680,380 L1680,1080 L-100,1080 Z" fill="url(#neonBlueRibbon)" />
+      <path d="M120,1040 C520,940 780,580 1280,410 C1450,355 1590,420 1700,520 L1700,1120 L120,1120 Z" fill="url(#cyanCoreRibbon)" />
+      <path d="M480,1080 C820,980 1050,740 1480,620 L1720,1140 L480,1140 Z" fill="#020614" opacity="0.88" />
+    </svg>
+
+    <!-- Secondary Counter-Flowing Silk Wave Layer for Extra Visual Motion -->
+    <svg class="silk-ribbon-layer-secondary" viewBox="0 0 1440 900" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M-150,750 C280,650 560,220 1120,110 C1340,65 1520,130 1660,230 L1660,960 L-150,960 Z" fill="url(#cyanCoreRibbon)" />
+      <path d="M-100,880 C320,760 640,340 1200,210 C1420,160 1580,250 1680,360 L1680,1040 L-100,1040 Z" fill="url(#warmCreamRibbon)" opacity="0.55" />
+    </svg>
+  </div>
+
+  <!-- Dynamic Fluid Plasma Waves & Zero-G Floating Embers Canvas -->
+  <canvas id="fluidPlasmaCanvas" class="fixed inset-0 w-full h-full pointer-events-none z-[1]"></canvas>
+
+  <!-- Readability Vignette & Telemetry Grid -->
+  <div class="bg-readability-vignette telemetry-grid"></div>
+
+  <!-- Toast Notification on Link Launch -->
+  <div id="warpLinkToast" class="fixed bottom-6 right-6 z-50 hidden pointer-events-none">
+    <div class="px-5 py-3.5 rounded-2xl bg-slate-950/90 border border-cyan-400/70 shadow-[0_0_32px_rgba(0,229,255,0.5)] backdrop-blur-xl flex items-center gap-3">
+      <span class="w-3 h-3 rounded-full bg-cyan-400 animate-ping"></span>
+      <div>
+        <div class="text-xs font-mono text-cyan-300 uppercase tracking-wider">Telemetry Link Initiated</div>
+        <div id="warpToastTitle" class="text-sm font-medium text-white truncate max-w-xs">Connecting to research archive...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MAIN DASHBOARD CONTAINER                                              -->
+  <!-- ===================================================================== -->
+  <div id="mainDashboardWrapper" class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- Orbital Header -->
+    <header class="space-card rounded-2xl p-6 sm:p-8 mb-8 relative overflow-hidden animate-entrance" style="animation-delay: 0.05s;">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+        
+        <div class="flex items-start sm:items-center gap-5">
+          <!-- Zero-G Spherical Flame Emblem -->
+          <div class="relative flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-slate-950/90 border border-cyan-400/45 flex items-center justify-center shadow-inner" title="Zero-Gravity Spherical Flame Simulation (No Buoyancy Convection)">
+            <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-full zero-g-sphere"></div>
+            <span class="absolute bottom-1.5 right-2 text-[9px] font-mono text-cyan-300/95 tracking-tighter">0-g</span>
+          </div>
+
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-400/40 text-cyan-200 text-xs font-mono mb-2">
+              <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+              NASA PSI ARCHIVE // 7 INVESTIGATIONS · ISS &amp; CYGNUS
+            </div>
+            <h1 class="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">
+              Flame in <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-300 to-orange-300">microgravity</span>
+            </h1>
+            <p class="text-slate-300/95 text-sm sm:text-base mt-1.5 max-w-2xl">
+              Interactive hub for the 7 NASA microgravity fire investigations we use: burning fuel droplets, solid spacecraft materials and large fires inside a cargo ship.
+            </p>
+          </div>
+        </div>
+
+        <!-- Telemetry Counters + Action Buttons -->
+        <div class="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-stretch sm:items-center gap-3 border-t lg:border-t-0 pt-4 lg:pt-0 border-slate-800/80">
+          <div class="grid grid-cols-1 gap-2.5">
+            <div class="bg-slate-950/75 border border-emerald-500/25 rounded-xl px-3 py-2 text-center">
+              <div class="text-[10px] font-mono text-slate-400 uppercase">Visible</div>
+              <div id="filteredCountStat" class="text-lg font-bold font-mono text-emerald-300 mt-0.5">0</div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2.5">
+            <button
+              id="replayIntroBtn"
+              title="Replay Rocket & Zero-G Flame Intro"
+              class="px-3.5 py-3 rounded-xl bg-slate-950/85 hover:bg-slate-900 text-cyan-200 border border-cyan-400/35 hover:border-cyan-400/70 text-xs font-mono transition flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Intro</span>
+            </button>
+
+            <a
+              href="#dataExplorer"
+              class="neon-link-btn flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 font-bold text-xs sm:text-sm shadow-lg shadow-cyan-500/25 cursor-pointer"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M3 10h18M3 14h18M9 4v16M15 4v16" />
+              </svg>
+              <span>Data Explorer</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Overview: what we have -->
+    <section class="mb-8 animate-entrance" style="animation-delay: 0.1s;">
+      <div class="space-card rounded-2xl p-5 sm:p-6">
+        <div class="text-xs font-mono text-cyan-300 uppercase tracking-wider mb-4">What we have</div>
+        <div id="kpiGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+      </div>
+    </section>
+
+    <!-- Search & Keyword Filter Console -->
+    <section class="space-card rounded-2xl p-5 sm:p-6 mb-8 animate-entrance" style="animation-delay: 0.16s;">
+      <div class="flex flex-col md:flex-row gap-4 items-stretch md:items-center">
+        <!-- Keyword Search Input -->
+        <div class="relative flex-1">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-cyan-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="Search by keyword (e.g., SAFFIRE, PMMA, droplet, oxygen, extinction, Nomex)..."
+            class="w-full pl-11 pr-10 py-3.5 rounded-xl bg-slate-950/85 border border-slate-700/80 text-slate-100 placeholder-slate-400 text-sm focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/25 transition"
+          />
+          <button
+            id="clearSearchBtn"
+            title="Clear search"
+            class="hidden absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-white"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Sort Selector -->
+        <div class="flex items-center gap-2">
+          <label for="sortSelect" class="text-xs font-mono text-slate-300 whitespace-nowrap">SORT BY:</label>
+          <select
+            id="sortSelect"
+            class="px-3.5 py-3.5 rounded-xl bg-slate-950/85 border border-slate-700/80 text-slate-200 text-sm focus:outline-none focus:border-cyan-400 transition"
+          >
+            <option value="featured">Mission Relevance</option>
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="az">Alphabetical (A - Z)</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="didYouMean" class="mt-3 flex flex-wrap items-center gap-2 text-xs font-mono"></div>
+
+      <!-- Quick Filter Keyword Pills -->
+      <div class="mt-4 pt-4 border-t border-slate-800/80 flex flex-wrap items-center gap-2">
+        <span class="text-xs font-mono text-cyan-300/95 mr-1">KEYWORDS:</span>
+        <div id="categoryPills" class="flex flex-wrap gap-2"></div>
+      </div>
+    </section>
+
+    <!-- Research Cards Grid -->
+    <main>
+      <div id="researchGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Cards injected dynamically with staggered animations -->
+      </div>
+
+      <!-- Empty Search State -->
+      <div id="emptyState" class="hidden space-card rounded-2xl p-12 text-center my-6 animate-entrance">
+        <div class="w-14 h-14 rounded-full bg-slate-900 border border-cyan-500/30 flex items-center justify-center mx-auto mb-4 text-cyan-400">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-white">No matching research found</h3>
+        <p class="text-slate-300 text-sm mt-1 max-w-md mx-auto">
+          No studies matched your current query. Try another keyword such as <span class="text-cyan-300 font-mono">PMMA</span>, <span class="text-cyan-300 font-mono">SAFFIRE</span>, or <span class="text-cyan-300 font-mono">Ignition</span>.
+        </p>
+        <button
+          id="resetAllBtn"
+          class="mt-5 px-5 py-2.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-200 border border-cyan-400/40 text-sm font-medium transition"
+        >
+          Reset Filters &amp; Show All
+        </button>
+      </div>
+    </main>
+
+    <!-- Data Explorer -->
+    <section id="dataExplorer" class="space-card rounded-2xl p-5 sm:p-6 mt-10 animate-entrance" style="animation-delay: 0.24s;">
+      <style>#dataExplorer.space-card:hover { transform: none; }</style>
+      <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-4">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-bold text-white">Data Explorer</h2>
+          <p class="text-slate-300 text-sm mt-1">Pick an investigation, then search its documents: the NASA PSI experimental tables and every table our reader extracted into <span class="font-mono text-cyan-200">&lt;PSI-ID&gt;/Procesado</span>, as they come.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2.5">
+          <select id="explorerPsi" aria-label="Investigation" class="px-3.5 py-3 rounded-xl bg-slate-950/85 border border-slate-700/80 text-slate-100 text-sm focus:outline-none focus:border-cyan-400 max-w-xs"></select>
+          <input id="tableFilter" type="text" placeholder="Filter rows..." class="px-3.5 py-3 rounded-xl bg-slate-950/85 border border-slate-700/80 text-slate-100 placeholder-slate-400 text-sm focus:outline-none focus:border-cyan-400 w-44" />
+          <button id="downloadFilteredBtn" class="px-4 py-3 rounded-xl bg-slate-950/85 hover:bg-slate-900 text-cyan-200 border border-cyan-400/40 text-sm font-semibold transition">Download filtered</button>
+          <button id="downloadAllBtn" class="neon-link-btn px-4 py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 text-slate-950 font-bold text-sm shadow-lg shadow-cyan-500/25">Download CSV</button>
+        </div>
+      </div>
+      <!-- Documents of the chosen investigation: search box + list (first 100 matches) -->
+      <div class="mb-4">
+        <div class="flex flex-wrap items-center gap-3 mb-2">
+          <input id="docSearch" type="text" placeholder="Search documents of this investigation (e.g., Radiometer, A109D03, Sensor)..." class="flex-1 min-w-[240px] px-3.5 py-2.5 rounded-xl bg-slate-950/85 border border-slate-700/80 text-slate-100 placeholder-slate-400 text-sm focus:outline-none focus:border-cyan-400" />
+          <span id="docCount" class="text-xs font-mono text-slate-400"></span>
+        </div>
+        <div id="docList" class="rounded-xl border border-slate-800/90 bg-slate-950/60 max-h-52 overflow-auto divide-y divide-slate-800/70"></div>
+      </div>
+      <div id="tableInfo" class="text-xs font-mono text-slate-400 mb-3"></div>
+      <div class="rounded-xl border border-slate-800/90 overflow-auto max-h-[480px]">
+        <table class="min-w-full text-sm">
+          <thead id="tableHead" class="sticky top-0 bg-slate-950 text-[11px] font-mono text-cyan-200"></thead>
+          <tbody id="tableBody" class="divide-y divide-slate-800/70"></tbody>
+        </table>
+      </div>
+      <div class="flex items-center justify-between mt-3 text-xs font-mono text-slate-400">
+        <span id="tablePageInfo"></span>
+        <div class="flex gap-2">
+          <button id="tablePrev" class="px-3 py-1.5 rounded-lg border border-slate-700 hover:border-cyan-400/60 hover:text-white">Prev</button>
+          <button id="tableNext" class="px-3 py-1.5 rounded-lg border border-slate-700 hover:border-cyan-400/60 hover:text-white">Next</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="mt-12 pt-6 border-t border-slate-800/70 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-3 font-mono animate-entrance" style="animation-delay: 0.3s;">
+      <div>FLAME IN MICROGRAVITY // ORBITAL COMBUSTION ARCHIVE</div>
+      <div>DATASETS: NASA PSI · PSI-25, 26, 68, 69, 98, 99, 100</div>
+    </footer>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- STUDY PREVIEW MODAL (ON CARD CLICK)                                   -->
+  <!-- ===================================================================== -->
+  <div id="studyModal" class="fixed inset-0 z-50 flex flex-col overflow-hidden" aria-hidden="true">
+    <!-- Top bar: back, one tab per slide, previous / next -->
+    <div class="shrink-0 z-20 bg-[#0f2a52]/85 backdrop-blur-md border-b border-cyan-400/20">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
+        <button id="closeModalBtn" aria-label="Back to archive" class="shrink-0 inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-200 border border-cyan-400/40 text-sm font-medium transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 19l-7-7 7-7" /></svg>
+          <span class="hidden lg:inline">Back to archive</span>
+        </button>
+        <span id="modalPageId" class="hidden md:inline shrink-0 text-xs font-mono text-slate-300"></span>
+        <div id="slideTabs" role="tablist" aria-label="Sections of this investigation" class="flex-1 min-w-0 flex items-center gap-1.5 overflow-x-auto"></div>
+        <div class="shrink-0 flex items-center gap-1.5">
+          <button id="slidePrev" aria-label="Previous slide" class="w-9 h-9 rounded-full bg-slate-900 hover:bg-slate-800 border border-cyan-400/40 text-cyan-200 text-xl leading-none transition disabled:opacity-30 disabled:cursor-default">&#8249;</button>
+          <span id="slideCount" class="w-10 text-center text-xs font-mono text-slate-300"></span>
+          <button id="slideNext" aria-label="Next slide" class="w-9 h-9 rounded-full bg-slate-900 hover:bg-slate-800 border border-cyan-400/40 text-cyan-200 text-xl leading-none transition disabled:opacity-30 disabled:cursor-default">&#8250;</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slides: the first one is the banner; the others are added by renderModalDetails() -->
+    <div id="slideViewport" class="flex-1 min-h-0 overflow-hidden">
+      <div id="slideTrack" class="flex h-full transition-transform duration-500 ease-out">
+        <section class="page-slide" data-slide-title="Overview">
+          <div class="page-slide-box flex flex-col">
+            <!-- Photo gallery (slider) of the investigation -->
+            <div id="modalGallery" class="mb-5 flex-1 min-h-[14rem] sm:min-h-[18rem] relative overflow-hidden rounded-2xl border border-cyan-400/30 bg-slate-950 select-none">
+              <div class="absolute inset-0 flex items-center justify-center"><div class="w-14 h-14 rounded-full zero-g-sphere"></div></div>
+              <div id="galleryTrack" class="absolute inset-0 flex transition-transform duration-500 ease-out"></div>
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/10 to-transparent pointer-events-none"></div>
+              <button id="galleryPrev" aria-label="Previous photo" class="hidden absolute left-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-slate-950/70 hover:bg-slate-900 border border-cyan-400/40 text-cyan-200 text-xl leading-none transition">&#8249;</button>
+              <button id="galleryNext" aria-label="Next photo" class="hidden absolute right-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-slate-950/70 hover:bg-slate-900 border border-cyan-400/40 text-cyan-200 text-xl leading-none transition">&#8250;</button>
+              <div id="galleryDots" class="absolute bottom-3 right-5 z-10 flex items-center gap-1.5"></div>
+              <p id="modalImageCredit" class="absolute left-5 right-28 bottom-2 text-[11px] font-mono text-slate-200/90 leading-snug"></p>
+            </div>
+
+            <div class="rounded-2xl bg-slate-950/35 border border-cyan-400/20 p-5 sm:p-7">
+              <div class="flex flex-wrap items-center gap-2.5 mb-3">
+                <span id="modalMissionBadge" class="px-3 py-1 rounded-lg text-xs font-mono font-semibold bg-cyan-500/15 text-cyan-200 border border-cyan-400/35"></span>
+                <span id="modalYearBadge" class="px-2.5 py-1 rounded-lg text-xs font-mono bg-slate-900 text-slate-300 border border-slate-800"></span>
+              </div>
+
+              <h2 id="modalTitle" class="text-xl sm:text-2xl font-bold text-white leading-snug mb-4"></h2>
+
+              <div class="bg-slate-950/75 border border-slate-800/90 rounded-xl p-4 sm:p-5 mb-5">
+                <div class="text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2">Executive Abstract</div>
+                <p id="modalSummary" class="text-slate-200 text-sm sm:text-base leading-relaxed"></p>
+              </div>
+
+              <div class="mb-5">
+                <div class="text-xs font-mono text-slate-400 uppercase mb-2">Associated Keywords</div>
+                <div id="modalTags" class="flex flex-wrap gap-2"></div>
+              </div>
+
+              <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-slate-800/90">
+                <button
+                  id="modalDataBtn"
+                  class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-200 border border-cyan-400/40 text-sm font-medium transition"
+                >
+                  Open in Data Explorer
+                </button>
+                <a
+                  id="modalExternalLink"
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="neon-link-btn inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-cyan-200 border border-cyan-400/40 text-sm font-medium"
+                >
+                  <span>Open PSI Record (DOI)</span>
+                  <svg class="w-4 h-4 arrow-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </a>
+                <button
+                  id="modalNextSlide"
+                  class="neon-link-btn inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 text-slate-950 font-bold text-sm shadow-lg shadow-cyan-500/30"
+                >
+                  <span>See the findings</span><span aria-hidden="true">&#8250;</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- CHAT WIDGET (local Ollama model: datos.js texts + extracted CSV data)  -->
+  <!-- ===================================================================== -->
+  <aside id="chatWidget" class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[60] flex flex-col items-end gap-3">
+    <div id="chatPanel" class="w-[calc(100vw-2rem)] sm:w-96 h-[32rem] max-h-[74vh] flex flex-col rounded-2xl border border-cyan-400/35 bg-slate-950/95 backdrop-blur-md shadow-2xl shadow-black/60 overflow-hidden" role="dialog" aria-label="Flamita chat">
+      <div class="flex items-center justify-between gap-3 px-4 py-3 border-b border-slate-800/90 bg-slate-900/70">
+        <div class="flex items-center gap-3 min-w-0">
+          <svg class="w-9 h-9 shrink-0" style="filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.5));"><use href="#flamita" /></svg>
+          <div class="min-w-0">
+            <div class="text-sm font-bold text-white">Flamita</div>
+            <div id="chatModelLabel" class="text-[11px] font-mono text-slate-400 truncate"></div>
+          </div>
+        </div>
+        <button id="chatCloseBtn" aria-label="Minimize chat" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+        </button>
+      </div>
+      <div class="flex items-center gap-1.5 px-4 py-2 border-b border-slate-800/90">
+        <span class="text-[11px] text-slate-400 mr-1">My level</span>
+        <button data-chat-level="beginner">Beginner</button>
+        <button data-chat-level="intermediate">Intermediate</button>
+        <button data-chat-level="advanced">Advanced</button>
+      </div>
+      <!-- What Flamita answers from: the experiment texts (datos.js) or the extracted CSV files (pandas server) -->
+      <div class="flex items-center gap-1.5 px-4 py-2 border-b border-slate-800/90">
+        <span class="text-[11px] text-slate-400 mr-1">Ask about</span>
+        <button data-chat-mode="experiments">Experiments</button>
+        <button data-chat-mode="data">CSV data</button>
+        <select id="chatScope" aria-label="Investigation for CSV questions" class="hidden ml-auto px-2 py-1 rounded-lg bg-slate-900 border border-slate-700/80 text-[11px] text-slate-200 focus:outline-none focus:border-cyan-400"></select>
+      </div>
+      <div id="chatMessages" class="flex-1 overflow-y-auto px-4 py-3 space-y-3 text-sm"></div>
+      <div id="chatChips" class="px-4 pb-2 flex flex-wrap gap-1.5"></div>
+      <div class="flex items-center gap-2 px-3 py-3 border-t border-slate-800/90">
+        <input id="chatInput" type="text" autocomplete="off" placeholder="Ask Flamita about any experiment..." class="flex-1 min-w-0 px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700/80 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-400" />
+        <button id="chatSendBtn" aria-label="Send" class="px-3.5 py-2.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-100 border border-cyan-400/45 text-sm font-semibold transition disabled:opacity-40">Send</button>
+      </div>
+    </div>
+    <div class="relative flex items-center gap-3">
+      <div id="chatHint" class="px-3 py-1.5 rounded-lg bg-slate-900/95 border border-slate-700/80 text-xs text-slate-200 shadow-lg">Ask Flamita about any experiment</div>
+      <button id="chatLauncher" aria-expanded="false" aria-controls="chatPanel" class="inline-flex items-center gap-2 pl-2 pr-4 py-1.5 rounded-full bg-slate-950/90 hover:bg-slate-900 border border-cyan-400/45 hover:border-cyan-300/80 text-cyan-100 text-sm font-medium shadow-lg shadow-black/50 transition">
+        <svg class="w-8 h-8 flamita-float" style="filter: drop-shadow(0 0 6px rgba(0, 229, 255, 0.5));"><use href="#flamita" /></svg>
+        <span>Flamita</span>
+      </button>
+    </div>
+  </aside>
+
+  <script src="datos.js"></script>
+  <script src="explorador/resumen.js"></script><!-- how many CSV files each Procesado folder has (construir_explorador.py) -->
+  <script src="procesados.js"></script><!-- summaries of the extracted CSV files (construir_procesados.py) -->
+  <script>
+    // =========================================================================
+    // 1. RESEARCH DATASET: THE 7 NASA PSI INVESTIGATIONS WE USE (REAL DATA)
+    // =========================================================================
+    const researchData = [
+      {
+        id: "psi-69",
+        mission: "PSI-69 / FLEX",
+        year: "2009–2011",
+        startYear: 2009,
+        platform: "ISS · Combustion Integrated Rack",
+        title: "Flame Extinguishment Experiment",
+        summary: "Burned methanol and heptane droplets on the ISS while changing oxygen, pressure and the suppressants CO2 and helium, to map when a flame survives and when it goes out.",
+        tags: ["Droplets", "Methanol", "Heptane", "Oxygen", "Extinction", "Cool Flame"],
+        image: "../../dashboard/img/PSI-69.jpg",
+        url: "https://doi.org/10.60555/mbq8-0451"
+      },
+      {
+        id: "psi-25",
+        mission: "PSI-25 / BASS-II",
+        year: "2014–2018",
+        startYear: 2014,
+        platform: "ISS · Microgravity Science Glovebox",
+        title: "Burning and Suppression of Solids II",
+        summary: "Burned PMMA acrylic, SIBAL cotton-fiberglass fabric, Nomex and a candle in a small wind tunnel inside the ISS glovebox, changing airflow and oxygen to study flame spread and extinction.",
+        tags: ["Solid Materials", "PMMA", "SIBAL", "Nomex", "Oxygen", "Flame Spread"],
+        image: "../../dashboard/img/PSI-25.jpg",
+        url: "https://doi.org/10.60555/4qc4-de67"
+      },
+      {
+        id: "psi-26",
+        mission: "PSI-26 / BASS",
+        year: "2012–2013",
+        startYear: 2012,
+        platform: "ISS · Microgravity Science Glovebox",
+        title: "Burning and Suppression of Solids",
+        summary: "The first BASS campaign: compared how thicker, realistic materials burn in space with NASA's Earth test, and tried a nitrogen jet to put the flames out.",
+        tags: ["Solid Materials", "SIBAL", "PMMA", "Nomex", "Nitrogen", "Extinction"],
+        image: "../../dashboard/img/PSI-26.jpg",
+        url: "https://doi.org/10.60555/58h4-dy80"
+      },
+      {
+        id: "psi-68",
+        mission: "PSI-68 / FLEX-2",
+        year: "2016–2019",
+        startYear: 2016,
+        platform: "ISS · Combustion Integrated Rack",
+        title: "Flame Extinguishment Experiment 2",
+        summary: "Extended FLEX to engine-like fuels and fuel mixtures, pairs of droplets and droplets in a slow flow, to give benchmark data for combustion models.",
+        tags: ["Droplets", "Fuel Mixtures", "Soot", "Extinction"],
+        image: "../../dashboard/img/PSI-68.jpg",
+        url: "https://doi.org/10.60555/byp8-h018"
+      },
+      {
+        id: "psi-98",
+        mission: "PSI-98 / SAFFIRE-I",
+        year: "2016",
+        startYear: 2016,
+        platform: "Cygnus cargo vehicle",
+        title: "Spacecraft Fire Safety Experiment I",
+        summary: "A large fire on a 94 × 40.6 cm cotton-fiberglass fabric, lit inside the uncrewed Cygnus cargo ship after it left the ISS, to see how fast it grows.",
+        tags: ["Large-Scale Fire", "SIBAL", "Cygnus", "Flame Spread"],
+        image: "",  // no real photo in the local SAFFIRE documents yet
+        url: "https://doi.org/10.60555/0t15-1z43"
+      },
+      {
+        id: "psi-99",
+        mission: "PSI-99 / SAFFIRE-II",
+        year: "2016–2017",
+        startYear: 2016,
+        platform: "Cygnus cargo vehicle",
+        title: "Spacecraft Fire Experiment II",
+        summary: "Nine 5 × 29 cm samples (fabric, silicone, PMMA, Nomex) burned inside Cygnus to compare flame spread in microgravity with NASA's Earth screening test.",
+        tags: ["Large-Scale Fire", "PMMA", "Nomex", "Silicone", "Cygnus", "Flame Spread"],
+        image: "",  // no real photo in the local SAFFIRE documents yet
+        url: "https://doi.org/10.60555/2chp-m469"
+      },
+      {
+        id: "psi-100",
+        mission: "PSI-100 / SAFFIRE-III",
+        year: "2017",
+        startYear: 2017,
+        platform: "Cygnus cargo vehicle",
+        title: "Spacecraft Fire Experiment III",
+        summary: "Repeated the large fabric fire inside Cygnus with faster airflow (30 cm/s instead of 20 cm/s) to see how ventilation changes fire growth.",
+        tags: ["Large-Scale Fire", "SIBAL", "Cygnus", "Airflow"],
+        image: "",  // no real photo in the local SAFFIRE documents yet
+        url: "https://doi.org/10.60555/040q-4h36"
+      }
+    ];
+
+    const quickKeywords = [
+      "All",
+      "Droplets",
+      "Solid Materials",
+      "Large-Scale Fire",
+      "PMMA",
+      "SIBAL",
+      "Nomex",
+      "Oxygen",
+      "Extinction"
+    ];
+
+    // =========================================================================
+    // DATA FROM datos.js (generated by Pruebas/dashboard_completo/construir_datos.py)
+    // =========================================================================
+    const DASH_DATA = window.DASH || {};
+    const EXTRA = Object.fromEntries((DASH_DATA.experiments || []).map(e => [e.id, e])); // "PSI-69" -> details
+
+    function escapeHtml(text) {
+      return String(text ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+
+    // =========================================================================
+    // STAGE 1. SIMILARITY SEARCH (same measure as Pruebas/similitud.py)
+    // =========================================================================
+    const MIN_SIMILARITY = 0.75; // 0 to 1: how close a word must be to count (1 = identical)
+    const STOPWORDS = new Set(["de", "del", "la", "el", "los", "las", "y", "en", "por", "a", "con", "of", "the", "and", "in", "by", "for", "with", "on", "to"]);
+    // The data is in English: Spanish words also search their English version
+    const SPANISH_TO_ENGLISH = {
+      oxigeno: ["oxygen", "o2"], presion: ["pressure"], temperatura: ["temperature", "temp"], tiempo: ["time"],
+      combustible: ["fuel"], diametro: ["diameter"], flujo: ["flow", "airflow"], velocidad: ["velocity", "speed"],
+      llama: ["flame"], gota: ["droplet", "droplets"], gotas: ["droplets"], muestra: ["sample"], nitrogeno: ["nitrogen"],
+      helio: ["helium"], quemado: ["burning", "burn"], extincion: ["extinction"], aire: ["air", "airflow"], tela: ["fabric"],
+      acrilico: ["pmma", "acrylic"], hollin: ["soot"], fuego: ["fire", "flame"], incendio: ["fire"], apagar: ["extinction", "suppression"],
+      extintor: ["suppressant"], nave: ["spacecraft", "cygnus"], viento: ["airflow", "flow"], solido: ["solid"], solidos: ["solid"],
+      materiales: ["materials"], monoxido: ["monoxide"], carbono: ["carbon"], calor: ["heat"]
+    };
+
+    function toWords(text) {
+      return normalizeText(String(text || "").replace(/([a-z])([A-Z])/g, "$1 $2")).replace(/[^a-z0-9]+/g, " ").trim().split(" ").filter(Boolean);
+    }
+
+    // Ratcliff/Obershelp: the same idea as difflib.SequenceMatcher.ratio() in Python
+    function matchingCharacters(a, b) {
+      let best = 0, ai = 0, bi = 0;
+      for (let i = 0; i < a.length; i++) {
+        for (let j = 0; j < b.length; j++) {
+          let k = 0;
+          while (i + k < a.length && j + k < b.length && a[i + k] === b[j + k]) k++;
+          if (k > best) { best = k; ai = i; bi = j; }
+        }
+      }
+      if (best === 0) return 0;
+      return best + matchingCharacters(a.slice(0, ai), b.slice(0, bi)) + matchingCharacters(a.slice(ai + best), b.slice(bi + best));
+    }
+
+    function wordSimilarity(query, word) {
+      if (query === word) return 1;
+      const prefix = query.length >= 3 && word.startsWith(query) ? 0.9 : 0; // typed the start of the word: 'temp' -> 'temperature'
+      if (2 * Math.min(query.length, word.length) / (query.length + word.length) < MIN_SIMILARITY) return prefix; // lengths too different
+      return Math.max(prefix, 2 * matchingCharacters(query, word) / (query.length + word.length));
+    }
+
+    function queryGroups(text) {
+      // Each typed word, plus its English version when it looks like a Spanish word from the list
+      return toWords(text).filter(w => !STOPWORDS.has(w)).map(word => {
+        const options = [word];
+        for (const [es, en] of Object.entries(SPANISH_TO_ENGLISH)) {
+          if (wordSimilarity(word, es) >= 0.8) options.push(...en);
+        }
+        return options;
+      });
+    }
+
+    // Where a word is found decides how much it counts: the PSI number, title, keywords and years count in full,
+    // the descriptions a bit less and the variable list the least. So "25" is 100% for PSI-25 only.
+    const LOOSE_NUMBER = 0.7; // a number found outside the first group (a measure like "25 cm") counts even less
+    function searchableFields(item) {
+      if (!item._fields) {
+        const extra = EXTRA[item.id.toUpperCase()] || {};
+        const variables = (extra.variables || []).map(v => v.col + " " + v.meaning).join(" ");
+        item._fields = [
+          [1, [item.mission, item.id, item.title, item.year, ...item.tags]],
+          [0.9, [item.summary, item.platform, (extra.tags || []).join(" "), extra.name, extra.headline]],
+          [0.7, [variables]]
+        ].map(([weight, texts]) => [weight, [...new Set(toWords(texts.join(" ")))]]);
+      }
+      return item._fields;
+    }
+
+    function searchableWords(item) {
+      return searchableFields(item).flatMap(field => field[1]);
+    }
+
+    function similarityScore(item, groups) {
+      // For every typed word, the most similar word of the experiment. All typed words must appear (even with typos)
+      let total = 0;
+      for (const options of groups) {
+        let best = 0;
+        for (const [weight, words] of searchableFields(item)) {
+          for (const word of words) for (const option of options) {
+            const isNumber = /^\d+$/.test(option);
+            // Numbers must be identical: "25" is not "250" and not "26"
+            const similarity = isNumber ? (option === word ? 1 : 0) : wordSimilarity(option, word);
+            if (similarity < MIN_SIMILARITY) continue;
+            best = Math.max(best, similarity * weight * (isNumber && weight < 1 ? LOOSE_NUMBER : 1));
+          }
+        }
+        if (!best) return 0;
+        total += best;
+      }
+      return groups.length ? total / groups.length : 0;
+    }
+
+    let vocabulary = null;
+    function renderDidYouMean() {
+      // Shows the closest known word for every typed word that is not in the vocabulary
+      const box = document.getElementById("didYouMean");
+      box.innerHTML = "";
+      if (!searchQuery.trim()) return;
+      if (!vocabulary) {
+        const all = new Set();
+        researchData.forEach(item => searchableWords(item).forEach(w => all.add(w)));
+        (DASH_DATA.vocabulary || []).forEach(name => toWords(name).forEach(w => { if (w.length > 2 && !/^\d+$/.test(w)) all.add(w); }));
+        vocabulary = [...all];
+      }
+      for (const word of toWords(searchQuery).filter(w => !STOPWORDS.has(w))) {
+        if (vocabulary.includes(word)) continue;
+        let best = "", bestScore = 0;
+        for (const candidate of vocabulary) {
+          const s = wordSimilarity(word, candidate);
+          if (s > bestScore) { bestScore = s; best = candidate; }
+        }
+        if (bestScore >= MIN_SIMILARITY) {
+          if (!box.childElementCount) {
+            const label = document.createElement("span");
+            label.className = "text-slate-400";
+            label.textContent = "DID YOU MEAN:";
+            box.appendChild(label);
+          }
+          const chip = document.createElement("span");
+          chip.className = "px-2.5 py-1 rounded-md bg-orange-500/15 border border-orange-400/40 text-orange-200";
+          chip.textContent = `${word} → ${best} (${Math.round(bestScore * 100)}%)`;
+          box.appendChild(chip);
+        }
+      }
+    }
+
+    // =========================================================================
+    // STAGE 2. DETAILS: KEY FINDINGS, VARIABLES AND RESOURCES
+    // =========================================================================
+    const ROLE_STYLE = {
+      input: "bg-cyan-500/15 text-cyan-200 border-cyan-400/40",
+      output: "bg-orange-500/15 text-orange-200 border-orange-400/40",
+      id: "bg-slate-800/80 text-slate-300 border-slate-600/60"
+    };
+
+    function detailSection(title, html, collapsed) {
+      // collapsed: undefined = always visible; true = folded; false = unfolded (the user can toggle both)
+      if (collapsed === undefined) {
+        return `<div><div class="text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2">${title}</div>${html}</div>`;
+      }
+      return `<details ${collapsed ? "" : "open"}><summary class="cursor-pointer list-none flex items-center gap-2 text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2 hover:text-cyan-200"><span class="fold-arrow inline-block transition-transform">&#9656;</span>${title}</summary>${html}</details>`;
+    }
+
+    function renderModalDetails(item) {
+      // Builds the slides that come after the banner: Findings, Data, Variables and Documents
+      const track = document.getElementById("slideTrack");
+      track.querySelectorAll("[data-dynamic]").forEach(slide => slide.remove());
+      const extra = EXTRA[item.id.toUpperCase()];
+      if (!extra) { buildSlideTabs(); showPageSlide(0); return; }
+      const slides = [];
+      let parts = [];
+      const closeSlide = title => { slides.push([title, parts.join("")]); parts = []; };
+      // The level chosen with Flamita decides what is open: beginners see the story first, advanced users see everything
+      const fold = { beginner: { vars: true, res: true, notes: true }, intermediate: { vars: false, res: true, notes: true }, advanced: { vars: false, res: false, notes: false } }[userLevel || "intermediate"];
+      if (userLevel) parts.push(`<p class="text-xs font-mono text-slate-400">View adapted for ${LEVELS[userLevel].label} level. Change it with Flamita.</p>`);
+
+      parts.push(detailSection("Why it matters", `<p class="text-slate-200 text-sm leading-relaxed">${escapeHtml(extra.safety_insight || extra.why_it_matters)}</p>
+        <p class="text-xs font-mono text-slate-400 mt-2">AI readiness: <span class="text-slate-200">${escapeHtml(extra.readiness.level)}</span> · ${escapeHtml(extra.readiness.reason)}</p>`));
+
+      if (extra.findings && extra.findings.length) {
+        parts.push(detailSection("Key findings", `<ul class="space-y-2.5">${extra.findings.map(f => `
+          <li class="text-sm text-slate-200 leading-relaxed pl-3 border-l-2 border-cyan-400/50">${escapeHtml(f.text)}
+            <div class="text-[11px] font-mono text-slate-400 mt-0.5">${escapeHtml(f.source.replace(/\.txt$/, ""))} · ${escapeHtml(f.where)}</div></li>`).join("")}</ul>`));
+      }
+      closeSlide("Findings");
+
+      const extractedHtml = renderExtractedCard(extra.id);
+      if (extractedHtml) { parts.push(detailSection(`Extracted data · ${escapeHtml(extra.id)}`, extractedHtml)); closeSlide("Data"); }
+
+      parts.push(detailSection("Variables · inputs &amp; outputs", `<div class="overflow-x-auto rounded-xl border border-slate-800/90"><table class="w-full text-sm">
+        <thead class="bg-slate-950/80 text-[11px] font-mono text-slate-400 uppercase"><tr>
+          <th class="text-left px-3 py-2">Role</th><th class="text-left px-3 py-2">Column</th><th class="text-left px-3 py-2">Meaning</th><th class="text-left px-3 py-2">Unit</th></tr></thead>
+        <tbody class="divide-y divide-slate-800/70">${extra.variables.map(v => `<tr>
+          <td class="px-3 py-2 align-top"><span class="px-2 py-0.5 rounded-md text-[11px] font-mono border ${ROLE_STYLE[v.role] || ROLE_STYLE.id}">${escapeHtml(v.role)}</span></td>
+          <td class="px-3 py-2 align-top font-mono text-xs text-slate-100">${escapeHtml(v.col)}</td>
+          <td class="px-3 py-2 align-top text-slate-300">${escapeHtml(v.meaning)}</td>
+          <td class="px-3 py-2 align-top font-mono text-xs text-slate-400 whitespace-nowrap">${escapeHtml(v.unit)}</td></tr>`).join("")}</tbody></table></div>`, fold.vars));
+      closeSlide("Variables");
+
+      const byCategory = {};
+      extra.resources.forEach(r => (byCategory[r.category] = byCategory[r.category] || []).push(r));
+      const resourcesHtml = Object.entries(byCategory).map(([category, list]) => `
+        <div class="mb-3"><div class="text-[11px] font-mono text-slate-400 mb-1">${escapeHtml(category)} (${list.length})</div>
+        <ul class="space-y-1">${list.map(r => `<li class="text-sm">
+          <a href="${escapeHtml(r.link)}" target="_blank" rel="noopener" class="text-cyan-200 hover:text-white hover:underline break-all">
+          <span class="inline-block px-1.5 py-0.5 mr-1.5 rounded bg-slate-800 text-[10px] font-mono uppercase text-slate-300">${escapeHtml(r.ext)}</span>${escapeHtml(r.name)}</a>
+          <span class="text-[11px] font-mono text-slate-500">${r.mb ? r.mb + " MB" : ""}</span></li>`).join("")}</ul></div>`).join("");
+      const rawLine = `<p class="text-xs font-mono text-slate-400 mt-1">${extra.raw_files ? `Raw data: ${extra.raw_files.toLocaleString("en-US")} files` : "Raw data: sensor files and spreadsheets"}${extra.raw_link ? ` · <a class="text-cyan-300 hover:underline" href="${escapeHtml(extra.raw_link)}" target="_blank" rel="noopener">open folder</a>` : ""} · ${extra.local_files.toLocaleString("en-US")} local files, ${extra.local_gb} GB</p>`;
+      parts.push(detailSection("Resources &amp; documents", resourcesHtml + rawLine, fold.res));
+
+      if (extra.data_notes && extra.data_notes.length) {
+        parts.push(detailSection("Data notes", `<ul class="list-disc pl-5 space-y-1 text-sm text-slate-300">${extra.data_notes.map(n => `<li>${escapeHtml(n)}</li>`).join("")}</ul>`, fold.notes));
+      }
+      parts.push(detailSection("Team", `<p class="text-sm text-slate-300">${escapeHtml(extra.ficha.people.join(", "))}</p>
+        <p class="text-xs font-mono text-slate-400 mt-1">${escapeHtml(extra.ficha.hardware)} · ${escapeHtml(extra.ficha.center)} · ${escapeHtml(extra.ficha.license)}</p>`));
+      closeSlide("Documents");
+
+      track.insertAdjacentHTML("beforeend", slides.map(([title, html]) => `
+        <section class="page-slide" data-dynamic data-slide-title="${title}"><div class="page-slide-box">
+          <div class="flex flex-wrap items-center gap-2.5 mb-4">
+            <span class="px-3 py-1 rounded-lg text-xs font-mono font-semibold bg-cyan-500/15 text-cyan-200 border border-cyan-400/35">${escapeHtml(item.mission)}</span>
+            <h3 class="text-lg sm:text-xl font-bold text-white">${title}</h3>
+          </div>
+          <div class="rounded-2xl bg-slate-950/35 border border-cyan-400/20 p-5 sm:p-7 space-y-6">${html}</div>
+        </div></section>`).join(""));
+      buildSlideTabs();
+      showPageSlide(pageSlideIndex); // changing the level keeps the slide that was open
+      const askButton = track.querySelector("[data-ask-data]");
+      if (askButton) askButton.addEventListener("click", () => { setChatMode("data", askButton.dataset.askData); setChatOpen(true); });
+    }
+
+    // =========================================================================
+    // SLIDES OF THE INVESTIGATION PAGE: tabs on top, arrows, keyboard and swipe
+    // =========================================================================
+    let pageSlideIndex = 0;
+
+    function pageSlides() {
+      return [...document.querySelectorAll("#slideTrack > .page-slide")];
+    }
+
+    function buildSlideTabs() {
+      const tabs = document.getElementById("slideTabs");
+      tabs.innerHTML = "";
+      pageSlides().forEach((slide, i) => {
+        const tab = document.createElement("button");
+        tab.setAttribute("role", "tab");
+        tab.textContent = slide.dataset.slideTitle;
+        tab.addEventListener("click", () => showPageSlide(i));
+        tabs.appendChild(tab);
+      });
+    }
+
+    function showPageSlide(i) {
+      const slides = pageSlides();
+      pageSlideIndex = Math.max(0, Math.min(i, slides.length - 1));
+      document.getElementById("slideViewport").scrollLeft = 0;
+      document.getElementById("slideTrack").style.transform = `translateX(-${pageSlideIndex * 100}%)`;
+      slides.forEach((slide, n) => { slide.inert = n !== pageSlideIndex; }); // hidden slides take no clicks and no Tab key
+      const tabs = document.getElementById("slideTabs");
+      [...tabs.children].forEach((tab, n) => {
+        const on = n === pageSlideIndex;
+        tab.setAttribute("aria-selected", String(on));
+        tab.className = "shrink-0 px-3 py-1.5 rounded-lg border text-xs font-mono transition " +
+          (on ? "bg-cyan-400 border-cyan-300 text-slate-950 font-bold" : "bg-slate-900/80 border-slate-700/80 text-slate-200 hover:border-cyan-400/60");
+        if (on) tabs.scrollLeft = tab.offsetLeft - (tabs.clientWidth - tab.clientWidth) / 2; // keeps the active tab in view
+      });
+      document.getElementById("slideCount").textContent = `${pageSlideIndex + 1} / ${slides.length}`;
+      document.getElementById("slidePrev").disabled = pageSlideIndex === 0;
+      document.getElementById("slideNext").disabled = pageSlideIndex === slides.length - 1;
+    }
+
+    // =========================================================================
+    // EXTRACTED DATA CARD: summary of the CSV files in Prefinal/<PSI>/Procesado
+    // (procesados.js is generated by construir_procesados.py)
+    // =========================================================================
+    const EXTRACTED = window.PROCESADOS || {};
+
+    function formatValue(value) {
+      if (typeof value === "number") return value.toLocaleString("en-US", { maximumSignificantDigits: 6 });
+      return String(value ?? "").replace(/\.000$/, "").replace(/(\.\d{3})000$/, "$1"); // dates without the extra zeros
+    }
+
+    function renderExtractedCard(id) {
+      const data = EXTRACTED[id];
+      if (!data || !data.tables.length) return "";
+      const totalRows = data.tables.reduce((sum, t) => sum + t.rows, 0);
+      const totalColumns = data.tables.reduce((sum, t) => sum + t.cols, 0);
+      const tiles = [["CSV tables", data.tables.length], ["Rows", totalRows], ["Columns", totalColumns]].map(([label, value]) => `
+        <div class="bg-slate-950/75 border border-cyan-500/20 rounded-xl px-3 py-2">
+          <div class="text-[10px] font-mono text-slate-400 uppercase">${label}</div>
+          <div class="text-lg font-bold text-white">${value.toLocaleString("en-US")}</div></div>`).join("");
+
+      const biggest = Math.max(...data.tables.map(t => t.rows)); // the largest table starts unfolded
+      let opened = false;
+      const tablesHtml = data.tables.map(t => {
+        const open = !opened && t.rows === biggest;
+        if (open) opened = true;
+        const types = [t.numeric && `${t.numeric} numeric`, t.text && `${t.text} text`, t.dates && `${t.dates} date/time`].filter(Boolean).join(" · ");
+        // Highlights: the time span and the first numeric columns that actually change
+        const time = t.columns.find(c => c.type === "date/time");
+        const changing = t.columns.filter(c => c.type === "number" && c.min !== c.max).slice(0, 3);
+        const highlights = [
+          time ? `<li><span class="text-slate-400">${escapeHtml(time.name)}:</span> ${escapeHtml(formatValue(time.min))}${time.min === time.max ? "" : " → " + escapeHtml(formatValue(time.max))}</li>` : "",
+          ...changing.map(c => `<li><span class="text-slate-400">${escapeHtml(c.name)}:</span> ${formatValue(c.min)} to ${formatValue(c.max)} (mean ${formatValue(c.mean)})</li>`)
+        ].join("");
+        const columnRows = t.columns.map(c => `<tr>
+          <td class="px-3 py-1.5 align-top font-mono text-xs text-slate-100">${escapeHtml(c.name || "(no name)")}</td>
+          <td class="px-3 py-1.5 align-top text-xs text-slate-400 whitespace-nowrap">${escapeHtml(c.type)}</td>
+          <td class="px-3 py-1.5 align-top text-xs text-right tabular-nums font-mono text-slate-300">${c.filled.toLocaleString("en-US")}</td>
+          <td class="px-3 py-1.5 align-top text-xs font-mono text-slate-300">${
+            c.min === c.max ? escapeHtml(formatValue(c.min))  // a single value: no range to show
+            : c.type === "number" ? `${formatValue(c.min)} to ${formatValue(c.max)} · mean ${formatValue(c.mean)}`
+            : c.type === "date/time" ? `${escapeHtml(formatValue(c.min))} → ${escapeHtml(formatValue(c.max))}`
+            : c.type === "text" ? `${c.distinct} distinct · e.g. ${escapeHtml(c.top.join(", "))}` : "empty"}</td></tr>`).join("");
+        return `<details class="rounded-xl border border-slate-800/90 bg-slate-950/60" ${open ? "open" : ""}>
+          <summary class="cursor-pointer list-none px-3 py-2.5 flex flex-wrap items-center gap-x-2 gap-y-1 hover:bg-slate-900/60 rounded-xl">
+            <span class="fold-arrow inline-block transition-transform text-cyan-400">&#9656;</span>
+            <span class="inline-block px-1.5 py-0.5 rounded bg-slate-800 text-[10px] font-mono uppercase text-slate-300">csv</span>
+            <span class="text-sm text-slate-100 break-all">${escapeHtml(t.file)}</span>
+            <span class="text-[11px] font-mono text-slate-400">${t.rows.toLocaleString("en-US")} row${t.rows === 1 ? "" : "s"} × ${t.cols} columns</span>
+          </summary>
+          <div class="px-3 pb-3">
+            <p class="text-xs font-mono text-slate-400 mb-2">${types} · ${t.empty_pct}% empty cells ·
+              <a class="text-cyan-300 hover:underline" href="${escapeHtml(t.link)}" target="_blank" rel="noopener">open CSV</a></p>
+            ${highlights ? `<ul class="text-sm text-slate-200 space-y-0.5 mb-3 pl-3 border-l-2 border-orange-400/50">${highlights}</ul>` : ""}
+            <div class="overflow-auto max-h-64 rounded-lg border border-slate-800/90"><table class="w-full text-sm">
+              <thead class="sticky top-0 bg-slate-950 text-[11px] font-mono text-slate-400 uppercase"><tr>
+                <th class="text-left px-3 py-2">Column</th><th class="text-left px-3 py-2">Type</th><th class="text-right px-3 py-2">Filled</th><th class="text-left px-3 py-2">Summary</th></tr></thead>
+              <tbody class="divide-y divide-slate-800/70">${columnRows}</tbody></table></div>
+          </div></details>`;
+      }).join("");
+
+      return `<div class="rounded-2xl border border-orange-400/35 bg-slate-950/50 p-4">
+        <div class="flex flex-wrap items-center gap-2 mb-3">
+          <span class="px-3 py-1 rounded-lg text-xs font-mono font-bold bg-orange-500/15 text-orange-200 border border-orange-400/45">${escapeHtml(id)}</span>
+          <span class="text-sm text-slate-200">Clean CSV tables extracted from <span class="font-mono text-xs text-slate-100 break-all">${escapeHtml(data.source)}</span></span>
+        </div>
+        <div class="grid grid-cols-3 gap-2 mb-3">${tiles}</div>
+        <div class="space-y-2">${tablesHtml}</div>
+        <div class="flex flex-wrap items-center gap-3 mt-3">
+          <button data-ask-data="${escapeHtml(id)}" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-100 border border-cyan-400/45 text-sm font-semibold transition">
+            <svg class="w-5 h-5"><use href="#flamita" /></svg>Ask Flamita about this data</button>
+          <span class="text-[11px] font-mono text-slate-400">Values are described as they come in the file: nothing was changed.</span>
+        </div>
+      </div>`;
+    }
+
+    // =========================================================================
+    // STAGE 3. DATA EXPLORER: TABLES FROM THE DATA FOLDERS + CSV DOWNLOAD
+    // =========================================================================
+    const TABLES = DASH_DATA.tables || [];
+    // datos.js was made for another folder: point its links to where the files are from Prefinal/dash/
+    TABLES.forEach(t => {
+      t.link = t.link.replace(/^\.\.\/\.\.\/data\/raw\//, "../").replace(/^\.\.\/limpios\//, "../../Pruebas/limpios/");
+      t.folder = t.folder.replace(/^data\/raw\//, "");
+    });
+    // The PSI experimental tables are also in Procesado with the same name: they must not be counted twice
+    const isExtraTable = t => t.source !== "NASA PSI experimental table";
+    // List of the CSV files in the Procesado folders (explorador/resumen.js, made by construir_explorador.py)
+    const EXPLORER = window.EXPLORER_SUMMARY || { preview_rows: 50, group: 200, investigations: {} };
+    const PAGE_SIZE = 50;
+    let currentTable = null, tableRows = [], tablePage = 0, sortColumn = -1, sortAscending = true;
+
+    function isNumber(value) {
+      return String(value).trim() !== "" && !isNaN(Number(String(value).replace(/,/g, "")));
+    }
+
+    const DOC_LIMIT = 100;  // the list shows at most 100 documents; the search box narrows it
+    let explorerDocs = [];  // documents of the chosen investigation: its tables of datos.js, then its Procesado CSV
+    let currentDoc = null, psiRequest = 0, docRequest = 0;
+
+    // The lists and previews of the Procesado CSV live in explorador/*.js; they are loaded only when needed
+    function loadScript(src) {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = () => { script.remove(); reject(new Error("Could not load " + src)); };
+        document.head.appendChild(script);
+      });
+    }
+
+    function initDataExplorer() {
+      const select = document.getElementById("explorerPsi");
+      select.innerHTML = "";
+      researchData.forEach(item => {
+        const psi = item.id.toUpperCase();
+        const inProcesado = (EXPLORER.investigations[psi] || {}).files || 0;
+        const total = TABLES.filter(t => t.investigation === psi && (isExtraTable(t) || !inProcesado)).length + inProcesado;
+        if (!total) return;
+        const option = document.createElement("option");
+        option.value = psi;
+        option.textContent = `${item.mission} (${total.toLocaleString("en-US")} documents)`;
+        select.appendChild(option);
+      });
+      select.addEventListener("change", () => choosePsi(select.value));
+      document.getElementById("docSearch").addEventListener("input", () => renderDocList());
+      document.getElementById("tableFilter").addEventListener("input", () => { tablePage = 0; renderTable(); });
+      document.getElementById("tablePrev").addEventListener("click", () => { tablePage = Math.max(0, tablePage - 1); renderTable(); });
+      document.getElementById("tableNext").addEventListener("click", () => { tablePage += 1; renderTable(); });
+      document.getElementById("downloadAllBtn").addEventListener("click", () => {
+        if (!currentTable) return;
+        if (currentTable.preview) {
+          // Only the first rows are in the page: the button downloads the complete CSV file instead
+          const link = document.createElement("a");
+          link.href = currentTable.link; link.download = currentTable.file;
+          document.body.appendChild(link); link.click(); link.remove();
+          triggerLinkEntranceFeedback(`Downloading ${currentTable.file}`);
+        } else downloadCsv(currentTable.file, currentTable.columns, currentTable.rows);
+      });
+      document.getElementById("downloadFilteredBtn").addEventListener("click", () => {
+        if (!currentTable) return;
+        // a preview only has the first rows: the file name says so
+        const partial = currentTable.preview && currentTable.n_rows > currentTable.rows.length;
+        downloadCsv(currentTable.file.replace(/\.csv$/i, "") + (partial ? `_first${currentTable.rows.length}_filtered.csv` : "_filtered.csv"), currentTable.columns, tableRows);
+      });
+      if (select.options.length) choosePsi(select.value);
+    }
+
+    // Choose an investigation: list its documents and open the first one
+    async function choosePsi(psi) {
+      const request = ++psiRequest;
+      document.getElementById("explorerPsi").value = psi;
+      document.getElementById("docSearch").value = "";
+      const own = TABLES.filter(t => t.investigation === psi)
+        .map(t => ({ name: t.file, rows: t.n_rows, cols: t.columns.length, table: t }));
+      explorerDocs = own;
+      renderDocList();
+      if (own.length) openDoc(own[0]);
+      if (!EXPLORER.investigations[psi]) return;
+      document.getElementById("docCount").textContent = "Loading the document list...";
+      try {
+        if (!(window.EXPLORER_INDEX || {})[psi]) await loadScript(`explorador/${psi}.js`);
+      } catch (error) {
+        if (request === psiRequest) document.getElementById("docCount").textContent = "The list of extracted CSV files could not be loaded.";
+        return;
+      }
+      if (request !== psiRequest) return; // another investigation was chosen meanwhile
+      const ownNames = new Set(own.map(d => d.name)); // already listed as "PSI table"
+      explorerDocs = own.concat(window.EXPLORER_INDEX[psi].map((d, i) => ({ name: d[0], rows: d[1], cols: d[2], index: i, psi }))
+        .filter(d => !ownNames.has(d.name)));
+      renderDocList(true);
+      if (!own.length && explorerDocs.length) openDoc(explorerDocs[0]);
+    }
+
+    // Documents whose name has every word typed in the search box (first 100)
+    function renderDocList(keepScroll) {
+      const words = normalizeText(document.getElementById("docSearch").value).split(/\s+/).filter(Boolean);
+      const matches = explorerDocs.filter(d => { const name = normalizeText(d.name); return words.every(w => name.includes(w)); });
+      const list = document.getElementById("docList");
+      const scroll = keepScroll ? list.scrollTop : 0;
+      list.innerHTML = "";
+      matches.slice(0, DOC_LIMIT).forEach(doc => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "doc-row w-full flex items-center justify-between gap-4 px-3.5 py-2 text-left text-sm hover:bg-cyan-500/10 focus:outline-none focus:bg-cyan-500/10"
+          + (doc === currentDoc ? " bg-cyan-500/15 text-white" : " text-slate-200");
+        const name = document.createElement("span");
+        name.className = "truncate";
+        name.textContent = doc.name; // file names are shown as text, never as HTML
+        const size = document.createElement("span");
+        size.className = "shrink-0 text-[11px] font-mono text-slate-400";
+        size.textContent = `${doc.table ? "PSI table · " : ""}${doc.rows.toLocaleString("en-US")} × ${doc.cols}`;
+        button.append(name, size);
+        button.addEventListener("click", () => openDoc(doc));
+        list.appendChild(button);
+      });
+      if (!matches.length) {
+        const empty = document.createElement("div");
+        empty.className = "px-3.5 py-3 text-sm text-slate-400";
+        empty.textContent = explorerDocs.length ? "No document matches that search." : "No documents.";
+        list.appendChild(empty);
+      }
+      document.getElementById("docCount").textContent = `${matches.length.toLocaleString("en-US")} of ${explorerDocs.length.toLocaleString("en-US")} documents`
+        + (matches.length > DOC_LIMIT ? ` · showing the first ${DOC_LIMIT}, type to narrow` : "");
+      list.scrollTop = scroll;
+    }
+
+    // Open a document: a table of datos.js is already in the page; a Procesado CSV loads its group of previews
+    async function openDoc(doc) {
+      const request = ++docRequest;
+      currentDoc = doc;
+      renderDocList(true);
+      if (doc.table) { showTable(doc.table); return; }
+      const group = Math.floor(doc.index / EXPLORER.group), key = `${doc.psi}_${group}`;
+      const info = document.getElementById("tableInfo");
+      info.textContent = `Loading ${doc.name}...`;
+      // empty the table meanwhile, so the previous document is not shown (or downloaded) as if it were this one
+      currentTable = null; tableRows = [];
+      document.getElementById("tableHead").innerHTML = "";
+      document.getElementById("tableBody").innerHTML = "";
+      document.getElementById("tablePageInfo").textContent = "";
+      try {
+        if (!(window.EXPLORER_CHUNKS || {})[key]) {
+          // keep only one group of previews in memory (each one is a few MB)
+          Object.keys(window.EXPLORER_CHUNKS || {}).forEach(k => { delete window.EXPLORER_CHUNKS[k]; });
+          await loadScript(`explorador/${key}.js`);
+        }
+      } catch (error) {
+        if (request === docRequest) info.textContent = `The preview of ${doc.name} could not be loaded.`;
+        return;
+      }
+      if (request !== docRequest) return; // another document was chosen meanwhile
+      const data = window.EXPLORER_CHUNKS[key][doc.index % EXPLORER.group];
+      const folder = EXPLORER.investigations[doc.psi].folder;
+      showTable({ file: doc.name, columns: data.c, rows: data.r, n_rows: doc.rows, investigation: doc.psi,
+        source: "Extracted by our reader", folder: folder.replace(/^\.\.\//, "").replace(/\/$/, ""),
+        link: folder + encodeURIComponent(doc.name), preview: true });
+    }
+
+    function showTable(table) {
+      currentTable = table;
+      document.getElementById("tableFilter").value = "";
+      tablePage = 0; sortColumn = -1; sortAscending = true;
+      const head = document.getElementById("tableHead");
+      head.innerHTML = "";
+      const row = document.createElement("tr");
+      currentTable.columns.forEach((name, i) => {
+        const th = document.createElement("th");
+        th.className = "text-left px-3 py-2 whitespace-nowrap cursor-pointer hover:text-white";
+        th.textContent = name || `(column ${i + 1})`;
+        th.title = "Click to sort";
+        th.addEventListener("click", () => { sortAscending = sortColumn === i ? !sortAscending : true; sortColumn = i; renderTable(); });
+        row.appendChild(th);
+      });
+      head.appendChild(row);
+      const info = document.getElementById("tableInfo");
+      const shown = currentTable.preview && currentTable.n_rows > currentTable.rows.length
+        ? ` · showing the first ${currentTable.rows.length} rows` : "";
+      info.textContent = `${currentTable.investigation || "-"} · ${currentTable.source} · ${currentTable.n_rows.toLocaleString("en-US")} rows × ${currentTable.columns.length} columns${shown} · ${currentTable.folder} · `;
+      const link = document.createElement("a");
+      link.href = currentTable.link; link.target = "_blank"; link.rel = "noopener";
+      link.className = "text-cyan-300 hover:underline";
+      link.textContent = currentTable.preview ? "open the full CSV" : "open original file";
+      info.appendChild(link);
+      renderTable();
+    }
+
+    function renderTable() {
+      if (!currentTable) return; // a document is still loading
+      const filter = normalizeText(document.getElementById("tableFilter").value);
+      tableRows = currentTable.rows.filter(r => !filter || r.some(cell => normalizeText(cell).includes(filter)));
+      if (sortColumn >= 0) {
+        const numeric = tableRows.every(r => String(r[sortColumn]).trim() === "" || isNumber(r[sortColumn]));
+        tableRows = [...tableRows].sort((a, b) => {
+          const x = a[sortColumn], y = b[sortColumn];
+          const result = numeric ? (Number(String(x).replace(/,/g, "")) || 0) - (Number(String(y).replace(/,/g, "")) || 0) : String(x).localeCompare(String(y));
+          return sortAscending ? result : -result;
+        });
+      }
+      const pages = Math.max(1, Math.ceil(tableRows.length / PAGE_SIZE));
+      tablePage = Math.min(tablePage, pages - 1);
+      const fragment = document.createDocumentFragment();
+      tableRows.slice(tablePage * PAGE_SIZE, (tablePage + 1) * PAGE_SIZE).forEach(r => {
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-cyan-500/5";
+        r.forEach(cell => {
+          const td = document.createElement("td");
+          td.className = "px-3 py-1.5 whitespace-nowrap text-slate-200" + (isNumber(cell) ? " text-right tabular-nums font-mono text-xs" : "");
+          td.textContent = cell; // table values are shown as text, never as HTML
+          tr.appendChild(td);
+        });
+        fragment.appendChild(tr);
+      });
+      const body = document.getElementById("tableBody");
+      body.innerHTML = "";
+      body.appendChild(fragment);
+      document.getElementById("tablePageInfo").textContent = `${tableRows.length.toLocaleString("en-US")} rows · page ${tablePage + 1} of ${pages}`;
+    }
+
+    function downloadCsv(name, columns, rows) {
+      const quote = v => /[",\r\n]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : String(v);
+      const text = [columns, ...rows].map(r => r.map(quote).join(",")).join("\r\n");
+      const blob = new Blob(["﻿" + text], { type: "text/csv;charset=utf-8" }); // BOM so Excel shows accents correctly
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = name;
+      document.body.appendChild(link);
+      link.click();
+      setTimeout(() => { URL.revokeObjectURL(link.href); link.remove(); }, 1000);
+      triggerLinkEntranceFeedback(`Downloading ${name}`);
+    }
+
+    function openTableFor(item) {
+      const psi = item.id.toUpperCase();
+      if (![...document.getElementById("explorerPsi").options].some(o => o.value === psi)) return;
+      closeModal(true);
+      choosePsi(psi);
+      document.getElementById("dataExplorer").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    // =========================================================================
+    // STAGE 4. OVERVIEW NUMBERS AND TESTS CHART
+    // =========================================================================
+    function renderOverview() {
+      const summary = DASH_DATA.summary;
+      if (!summary) return;
+      // Data tables = the tables of datos.js + every CSV in the Procesado folders (explorador/resumen.js)
+      const kpis = [
+        ["Documents linked", summary.documents],
+        ["Data tables", TABLES.filter(t => isExtraTable(t) || !EXPLORER.investigations[t.investigation]).length + Object.values(EXPLORER.investigations).reduce((sum, e) => sum + e.files, 0)]
+      ];
+      document.getElementById("kpiGrid").innerHTML = kpis.map(([label, value]) => `
+        <div class="bg-slate-950/75 border border-cyan-500/20 rounded-xl px-4 py-3">
+          <div class="text-[10px] font-mono text-slate-400 uppercase">${label}</div>
+          <div class="text-2xl font-bold text-white mt-1">${typeof value === "number" ? value.toLocaleString("en-US") : value}</div>
+        </div>`).join("");
+    }
+
+    // =========================================================================
+    // 2. CINEMATIC ROCKET -> ZERO-G SPHERICAL FLAME INTRO SEQUENCE
+    // =========================================================================
+    let introAnimFrame = null;
+    let introTimeout = null;
+    let introActive = false;
+
+    // ---- Flamita: levels, tips and typing effect ----
+    const LEVELS = {
+      beginner: {
+        label: "Beginner",
+        reply: "Great! I'll use simple words and explain each technical term as we go.",
+        style: "The user is a beginner. Use simple everyday words, explain each technical term in a few words, use a short analogy when it helps, avoid column names and formulas unless asked, and keep answers to 3 to 5 sentences."
+      },
+      intermediate: {
+        label: "Intermediate",
+        reply: "Nice! I'll keep a balance: the key ideas plus the main variables and units.",
+        style: "The user has intermediate knowledge. Explain the key concepts briefly, mention the main variables with their units, and keep answers to 4 to 7 sentences."
+      },
+      advanced: {
+        label: "Advanced",
+        reply: "Perfect. I'll go straight to variables, units, test conditions and caveats.",
+        style: "The user is advanced. Use precise terminology, name the table columns, units and test conditions, point out caveats from the data, and be concise."
+      }
+    };
+    let userLevel = null; // "beginner" | "intermediate" | "advanced" | null (skipped the question)
+
+    const FLAMITA_QUESTION = "Hi, I'm Flamita! I was born in that explosion. To explain the flames of microgravity at the right depth, how much do you already know about combustion?";
+    const FLAMITA_TIPS = [
+      "Hot air rises on Earth and stretches flames into a teardrop. With no buoyancy in orbit, flames turn round.",
+      "Candle flames in microgravity burn blue and dim: less soot forms, so there is less yellow glow.",
+      "Without rising hot gas, oxygen reaches a flame only by slowly diffusing in, so a small flame can smother itself.",
+      "Cool flames (PSI-69): after a fuel droplet's visible flame goes out, a faint cool flame can keep burning and vaporizing it.",
+      "BASS-II (PSI-25): a PMMA rod kept burning at 13.6% oxygen, while on Earth its limit was about 16%. Earth tests can underestimate fire risk.",
+      "Tiny flames can burn quietly for minutes and flare up if the airflow suddenly increases (BASS, PSI-26).",
+      "Spraying nitrogen at a flame does not always put it out: the jet can pull in air and feed it (BASS, PSI-26).",
+      "Saffire (PSI-98) burned a fabric sample about 0.4 m by 1 m inside an empty cargo ship, far larger than any earlier fire experiment in space.",
+      "Fuel droplets burn as near-perfect spheres in orbit, which makes them ideal for testing combustion theory (FLEX, PSI-68 and PSI-69).",
+      "In BASS, a fabric burned fastest with a gentle breeze of about 10 to 15 cm/s (PSI-26)."
+    ];
+
+    let flamitaTypeToken = 0;
+    function flamitaSay(el, text) {
+      // Types the text letter by letter; a new message cancels the previous one
+      const token = ++flamitaTypeToken;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { el.textContent = text; return; }
+      el.textContent = "";
+      let i = 0;
+      (function step() {
+        if (token !== flamitaTypeToken) return;
+        el.textContent = text.slice(0, ++i);
+        if (i < text.length) setTimeout(step, 24);
+      })();
+    }
+
+    let modelWarmed = false;
+    function warmUpModel() {
+      // Loads the Ollama model into memory while the intro plays, so the first answer is fast
+      if (!WARM_UP_MODEL || modelWarmed) return;
+      modelWarmed = true;
+      fetch(OLLAMA_URL + "/api/generate", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ model: OLLAMA_MODEL, keep_alive: "30m" })
+      }).catch(() => {}); // if Ollama is off, nothing happens here
+    }
+
+    function playCinematicIntro() {
+      const overlay = document.getElementById("introVideoOverlay");
+      const canvas = document.getElementById("introSequenceCanvas");
+      const ctx = canvas.getContext("2d");
+      const progressBar = document.getElementById("introProgressBar");
+      const phaseBadge = document.getElementById("introPhaseBadge");
+      const subCaption = document.getElementById("introSubCaption");
+      const gravityTelemetry = document.getElementById("introGravityTelemetry");
+      const dashboardWrapper = document.getElementById("mainDashboardWrapper");
+      const callout = document.getElementById("introCenterCallout");
+      const avatarBox = document.getElementById("flamitaAvatar");
+      const bubble = document.getElementById("flamitaBubble");
+      const speech = document.getElementById("flamitaSpeech");
+      const tipText = document.getElementById("flamitaTipText");
+      const levelButtons = [...document.querySelectorAll("#flamitaLevels .flamita-level")];
+
+      // Reset everything (the intro can be replayed)
+      avatarBox.classList.remove("show");
+      bubble.classList.remove("show");
+      callout.style.opacity = "";
+      speech.textContent = "";
+      tipText.textContent = "";
+      levelButtons.forEach(b => { b.disabled = false; b.classList.remove("selected"); });
+      flamitaTypeToken++;
+      warmUpModel();
+
+      overlay.classList.remove("intro-hidden");
+      dashboardWrapper.classList.remove("dashboard-ready");
+      introActive = true;
+
+      let w = (canvas.width = window.innerWidth);
+      let h = (canvas.height = window.innerHeight);
+      const handleIntroResize = () => {
+        if (!introActive) return;
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      };
+      window.addEventListener("resize", handleIntroResize);
+
+      const stars = Array.from({ length: 130 }, () => ({
+        x: Math.random() * w, y: Math.random() * h,
+        size: Math.random() * 1.8 + 0.4, speed: Math.random() * 4 + 2, alpha: Math.random() * 0.8 + 0.2
+      }));
+      const exhaustParticles = [];
+
+      // Timeline (ms): rocket climbs -> explosion -> Flamita appears -> she speaks and the tips start
+      const T_EXPLODE = 2300;
+      const T_AURA = T_EXPLODE + 450;
+      const T_AVATAR = T_EXPLODE + 900;
+      const T_SPEECH = T_AVATAR + 900;
+      const startTime = performance.now();
+      let exploded = false, avatarShown = false, speechShown = false;
+      let chosenAt = null, barAtChoice = 0, lastBar = 0;
+      let tipTimer = null, tipIndex = Math.floor(Math.random() * FLAMITA_TIPS.length);
+      const exX = w * 0.5, exY = () => h * 0.4; // where the rocket is when it explodes
+
+      function showTip() {
+        tipText.style.opacity = 0;
+        setTimeout(() => {
+          if (!introActive) return;
+          tipText.textContent = FLAMITA_TIPS[tipIndex++ % FLAMITA_TIPS.length];
+          tipText.style.opacity = 1;
+        }, 300);
+      }
+      function startTips() {
+        tipTimer = setTimeout(function loop() { showTip(); tipTimer = setTimeout(loop, 6500); }, 2200);
+      }
+
+      function finishIntro() {
+        if (!introActive) return;
+        introActive = false;
+        cancelAnimationFrame(introAnimFrame);
+        clearTimeout(introTimeout);
+        clearTimeout(tipTimer);
+        flamitaTypeToken++;
+        window.removeEventListener("resize", handleIntroResize);
+        overlay.classList.add("intro-hidden");
+        dashboardWrapper.classList.add("dashboard-ready");
+        renderCards(); // Trigger staggered card entrance
+        afterIntro();  // shows the Flamita chat button
+      }
+      document.getElementById("skipIntroBtn").onclick = finishIntro;
+
+      levelButtons.forEach(btn => {
+        btn.onclick = () => {
+          if (chosenAt !== null) return;
+          userLevel = btn.dataset.level;
+          btn.classList.add("selected");
+          levelButtons.forEach(b => { b.disabled = true; });
+          chosenAt = performance.now();
+          barAtChoice = lastBar;
+          flamitaSay(speech, LEVELS[userLevel].reply);
+          introTimeout = setTimeout(finishIntro, 2800); // time to read her answer
+        };
+      });
+
+      function explode() {
+        exploded = true;
+        callout.style.opacity = "0"; // the title leaves (inline style, because the element already has an opacity class)
+        phaseBadge.textContent = "STAGE 02 // IGNITION EVENT";
+        gravityTelemetry.textContent = "G-FORCE: 0.000001 g (ORBITAL)";
+        const colors = ["255, 255, 255", "251, 146, 60", "0, 229, 255", "255, 200, 110"];
+        for (let i = 0; i < 130; i++) {
+          const angle = Math.random() * Math.PI * 2, speed = Math.random() * 9 + 1.5;
+          exhaustParticles.push({
+            x: exX, y: exY(), vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+            r: Math.random() * 5 + 2, life: 1, decay: Math.random() * 0.012 + 0.01,
+            color: colors[Math.floor(Math.random() * colors.length)]
+          });
+        }
+      }
+
+      function renderFrame(now) {
+        if (!introActive) return;
+        const elapsed = now - startTime;
+
+        // Loading bar: fills while the intro runs; after the answer it completes
+        let progress;
+        if (chosenAt !== null) {
+          const k = Math.min(1, (now - chosenAt) / 1300);
+          progress = barAtChoice + (1 - barAtChoice) * (1 - Math.pow(1 - k, 3));
+        } else if (elapsed < T_EXPLODE) {
+          progress = (elapsed / T_EXPLODE) * 0.3;
+        } else {
+          progress = Math.min(0.92, 0.3 + ((elapsed - T_EXPLODE) / 14000) * 0.62);
+        }
+        lastBar = progress;
+        progressBar.style.width = `${progress * 100}%`;
+
+        if (!exploded && elapsed >= T_EXPLODE) explode();
+        if (exploded && !avatarShown && elapsed >= T_AVATAR) { avatarShown = true; avatarBox.classList.add("show"); }
+        if (avatarShown && !speechShown && elapsed >= T_SPEECH) {
+          speechShown = true;
+          bubble.classList.add("show");
+          flamitaSay(speech, FLAMITA_QUESTION);
+          startTips();
+        }
+
+        ctx.fillStyle = "rgba(2, 5, 13, 0.34)";
+        ctx.fillRect(0, 0, w, h);
+
+        const cx = w * 0.5;
+        const p1 = Math.min(1, elapsed / T_EXPLODE);
+        const warpSpeedFactor = elapsed < T_EXPLODE ? (1 - p1) * 4.5 + 0.35 : 0.35;
+        for (const s of stars) {
+          s.y += s.speed * warpSpeedFactor;
+          if (s.y > h) { s.y = 0; s.x = Math.random() * w; }
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(186, 230, 253, ${s.alpha})`;
+          ctx.lineWidth = s.size;
+          ctx.moveTo(s.x, s.y);
+          ctx.lineTo(s.x, s.y - s.speed * warpSpeedFactor * 2.2);
+          ctx.stroke();
+        }
+
+        // PHASE 1: the rocket climbs and shakes more and more
+        if (elapsed < T_EXPLODE) {
+          const rocketY = h * 0.82 - p1 * (h * 0.42);
+          const shakeX = (Math.random() - 0.5) * (1 + p1 * 3) * 3;
+
+          phaseBadge.textContent = "STAGE 01 // ORBITAL ASCENT THRUST";
+          subCaption.textContent = "MAIN ENGINE IGNITION // ESCAPING 1-G GRAVITY WELL...";
+          gravityTelemetry.textContent = `G-FORCE: ${(1.0 - p1 * 0.92).toFixed(2)} g`;
+
+          for (let i = 0; i < 6; i++) {
+            const isBlueCore = Math.random() > 0.35;
+            exhaustParticles.push({
+              x: cx + shakeX + (Math.random() - 0.5) * 14, y: rocketY + 46,
+              vx: (Math.random() - 0.5) * 2.8, vy: Math.random() * 5.5 + 3.5,
+              r: Math.random() * 7 + 3, life: 1, color: isBlueCore ? "0, 235, 255" : "251, 146, 60"
+            });
+          }
+
+          ctx.save();
+          ctx.translate(cx + shakeX, rocketY);
+          const plumeGrad = ctx.createRadialGradient(0, 52, 2, 0, 68, 65);
+          plumeGrad.addColorStop(0, "rgba(255, 255, 255, 0.95)");
+          plumeGrad.addColorStop(0.3, "rgba(0, 229, 255, 0.85)");
+          plumeGrad.addColorStop(0.7, "rgba(251, 146, 60, 0.45)");
+          plumeGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+          ctx.fillStyle = plumeGrad;
+          ctx.beginPath(); ctx.arc(0, 62, 65, 0, Math.PI * 2); ctx.fill();
+
+          ctx.fillStyle = "#0ea5e9";
+          ctx.beginPath(); ctx.moveTo(-14, 24); ctx.lineTo(-30, 46); ctx.lineTo(-12, 42); ctx.closePath(); ctx.fill();
+          ctx.beginPath(); ctx.moveTo(14, 24); ctx.lineTo(30, 46); ctx.lineTo(12, 42); ctx.closePath(); ctx.fill();
+
+          const bodyGrad = ctx.createLinearGradient(-15, -45, 15, 45);
+          bodyGrad.addColorStop(0, "#f8fafc"); bodyGrad.addColorStop(0.5, "#cbd5e1"); bodyGrad.addColorStop(1, "#38bdf8");
+          ctx.fillStyle = bodyGrad;
+          ctx.beginPath();
+          ctx.moveTo(0, -52); ctx.quadraticCurveTo(18, -18, 14, 42); ctx.lineTo(-14, 42); ctx.quadraticCurveTo(-18, -18, 0, -52);
+          ctx.fill();
+
+          ctx.fillStyle = "#0284c7";
+          ctx.beginPath(); ctx.arc(0, -10, 5.5, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = "#e0f2fe"; ctx.lineWidth = 1.5; ctx.stroke();
+          ctx.restore();
+        }
+
+        // PHASE 2: explosion (fireball, two shock rings, flash and burst of embers)
+        if (exploded) {
+          const te = elapsed - T_EXPLODE;
+          const fire = te / 800;
+          if (fire < 1) {
+            const fr = 30 + (1 - Math.pow(1 - fire, 3)) * 130;
+            const g = ctx.createRadialGradient(exX, exY(), 0, exX, exY(), fr);
+            g.addColorStop(0, `rgba(255, 255, 255, ${1 - fire})`);
+            g.addColorStop(0.4, `rgba(255, 190, 90, ${0.9 * (1 - fire)})`);
+            g.addColorStop(1, "rgba(251, 80, 40, 0)");
+            ctx.fillStyle = g;
+            ctx.beginPath(); ctx.arc(exX, exY(), fr, 0, Math.PI * 2); ctx.fill();
+          }
+          [["255, 200, 120", 0], ["0, 229, 255", 160]].forEach(([rgb, delay]) => {
+            const k = (te - delay) / 1000;
+            if (k > 0 && k < 1) {
+              ctx.strokeStyle = `rgba(${rgb}, ${(1 - k) * 0.85})`;
+              ctx.lineWidth = 6 * (1 - k) + 1;
+              ctx.beginPath(); ctx.arc(exX, exY(), (1 - Math.pow(1 - k, 3)) * Math.min(w, h) * 0.45, 0, Math.PI * 2); ctx.stroke();
+            }
+          });
+          const flash = 1 - te / 350; // white flash that fades in 0.35 s
+          if (flash > 0) {
+            ctx.fillStyle = `rgba(255, 240, 220, ${flash * 0.4})`;
+            ctx.fillRect(0, 0, w, h);
+          }
+        }
+
+        // PHASE 3: the spherical flame glows behind Flamita (it follows her avatar)
+        if (elapsed >= T_AURA) {
+          const rect = avatarBox.getBoundingClientRect();
+          const ax = rect.left + rect.width / 2, ay = rect.top + rect.height / 2;
+          const p2 = Math.min(1, (elapsed - T_AURA) / 1500);
+          const easeOut = 1 - Math.pow(1 - p2, 3);
+          const flameRadius = (avatarBox.offsetWidth / 2) * (0.35 + 0.65 * easeOut) + Math.sin(now * 0.004) * 3;
+
+          if (Math.random() < 0.5 && exhaustParticles.length < 200) {
+            const angle = Math.random() * Math.PI * 2, speed = Math.random() * 1.6 + 0.4;
+            exhaustParticles.push({
+              x: ax + Math.cos(angle) * flameRadius, y: ay + Math.sin(angle) * flameRadius,
+              vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+              r: Math.random() * 3 + 1, life: 1, color: Math.random() > 0.45 ? "0, 240, 255" : "251, 146, 60"
+            });
+          }
+          const outerAura = ctx.createRadialGradient(ax, ay, flameRadius * 0.2, ax, ay, flameRadius * 2.1);
+          outerAura.addColorStop(0, `rgba(255, 255, 255, ${0.5 * easeOut})`);
+          outerAura.addColorStop(0.28, `rgba(0, 229, 255, ${0.6 * easeOut})`);
+          outerAura.addColorStop(0.58, `rgba(0, 119, 255, ${0.4 * easeOut})`);
+          outerAura.addColorStop(0.82, `rgba(251, 146, 60, ${0.3 * easeOut})`);
+          outerAura.addColorStop(1, "rgba(0, 0, 0, 0)");
+          ctx.fillStyle = outerAura;
+          ctx.beginPath(); ctx.arc(ax, ay, flameRadius * 2.1, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = `rgba(125, 211, 252, ${0.6 * easeOut})`;
+          ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.arc(ax, ay, flameRadius * 1.2, 0, Math.PI * 2); ctx.stroke();
+        }
+
+        for (let i = exhaustParticles.length - 1; i >= 0; i--) {
+          const pt = exhaustParticles[i];
+          pt.x += pt.vx; pt.y += pt.vy;
+          pt.life -= pt.decay || 0.022;
+          if (pt.life <= 0) { exhaustParticles.splice(i, 1); continue; }
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y, pt.r * pt.life, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${pt.color}, ${pt.life * 0.85})`;
+          ctx.fill();
+        }
+
+        introAnimFrame = requestAnimationFrame(renderFrame); // it keeps going until the user answers or skips
+      }
+
+      introAnimFrame = requestAnimationFrame(renderFrame);
+    }
+
+    // =========================================================================
+    // 3. HIGH-MOBILITY FLUID SILK WAVES & ZERO-G PLASMA EMBERS CANVAS
+    // =========================================================================
+    function initDynamicPlasmaBackground() {
+      const canvas = document.getElementById("fluidPlasmaCanvas");
+      const ctx = canvas.getContext("2d");
+      let width, height, embers;
+      let mouseX = 0.5;
+      let mouseY = 0.5;
+
+      window.addEventListener("mousemove", (e) => {
+        mouseX = e.clientX / Math.max(1, window.innerWidth);
+        mouseY = e.clientY / Math.max(1, window.innerHeight);
+      });
+
+      function resize() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+        createEmbers();
+      }
+
+      function createEmbers() {
+        const count = Math.min(115, Math.floor((width * height) / 13500));
+        embers = Array.from({ length: count }, () => {
+          const isNeonOrAmber = Math.random() < 0.42;
+          return {
+            x: Math.random() * width,
+            y: Math.random() * height,
+            r: isNeonOrAmber ? Math.random() * 2.5 + 0.8 : Math.random() * 1.4 + 0.4,
+            vx: (Math.random() - 0.5) * 0.55,
+            vy: (Math.random() - 0.5) * 0.55,
+            phase: Math.random() * Math.PI * 2,
+            color: isNeonOrAmber
+              ? (Math.random() > 0.42 ? "0, 238, 255" : "251, 146, 60")
+              : "241, 245, 249"
+          };
+        });
+      }
+
+      function drawAnimatedSilkRibbons(time) {
+        const t = time * 0.0012;
+        const parallaxX = (mouseX - 0.5) * 65;
+        const parallaxY = (mouseY - 0.5) * 45;
+
+        // Flowing dynamic ribbons that undulate continuously
+        const ribbons = [
+          {
+            offsetY: height * 0.28 + parallaxY * 0.6,
+            amp: 75,
+            freq: 0.0022,
+            speed: t * 1.4,
+            colorStart: "rgba(0, 240, 255, 0.22)",
+            colorEnd: "rgba(0, 102, 255, 0.04)",
+            thickness: 190
+          },
+          {
+            offsetY: height * 0.52 - parallaxY * 0.5,
+            amp: 95,
+            freq: 0.0018,
+            speed: -t * 1.1,
+            colorStart: "rgba(255, 216, 184, 0.16)",
+            colorEnd: "rgba(224, 122, 95, 0.03)",
+            thickness: 220
+          },
+          {
+            offsetY: height * 0.72 + parallaxY * 0.8,
+            amp: 80,
+            freq: 0.0025,
+            speed: t * 1.7,
+            colorStart: "rgba(0, 180, 255, 0.24)",
+            colorEnd: "rgba(0, 68, 204, 0.04)",
+            thickness: 170
+          }
+        ];
+
+        for (const r of ribbons) {
+          ctx.beginPath();
+          ctx.moveTo(-100, height + 100);
+          for (let x = -100; x <= width + 100; x += 40) {
+            const diagonalSlope = -x * 0.28;
+            const wave =
+              Math.sin(x * r.freq + r.speed) * r.amp +
+              Math.cos(x * r.freq * 0.6 - r.speed * 0.8) * (r.amp * 0.45);
+            const y = r.offsetY + diagonalSlope + wave + parallaxX * 0.25;
+            ctx.lineTo(x, y);
+          }
+          ctx.lineTo(width + 100, height + 100);
+          ctx.closePath();
+
+          const grad = ctx.createLinearGradient(0, r.offsetY - r.thickness, width, r.offsetY + r.thickness);
+          grad.addColorStop(0, r.colorStart);
+          grad.addColorStop(1, r.colorEnd);
+          ctx.fillStyle = grad;
+          ctx.fill();
+        }
+      }
+
+      function animate(time) {
+        ctx.clearRect(0, 0, width, height);
+
+        // 1. Render continuously undulating fluid light ribbons
+        drawAnimatedSilkRibbons(time);
+
+        // 2. Render drifting zero-gravity plasma embers & stars
+        for (const p of embers) {
+          p.x += p.vx + Math.sin(time * 0.001 + p.phase) * 0.18;
+          p.y += p.vy + Math.cos(time * 0.001 + p.phase) * 0.18;
+
+          if (p.x < -10) p.x = width + 10;
+          if (p.x > width + 10) p.x = -10;
+          if (p.y < -10) p.y = height + 10;
+          if (p.y > height + 10) p.y = -10;
+
+          const pulseAlpha = 0.35 + Math.sin(time * 0.003 + p.phase) * 0.35;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${p.color}, ${Math.max(0.15, pulseAlpha)})`;
+          ctx.fill();
+        }
+
+        requestAnimationFrame(animate);
+      }
+
+      window.addEventListener("resize", resize);
+      resize();
+      requestAnimationFrame(animate);
+    }
+
+    // =========================================================================
+    // 4. DASHBOARD INTERACTIVITY, FILTERING & MODALS
+    // =========================================================================
+    let activeKeyword = "All";
+    let searchQuery = "";
+    let sortBy = "featured";
+
+    const searchInput = document.getElementById("searchInput");
+    const clearSearchBtn = document.getElementById("clearSearchBtn");
+    const sortSelect = document.getElementById("sortSelect");
+    const categoryPills = document.getElementById("categoryPills");
+    const researchGrid = document.getElementById("researchGrid");
+    const emptyState = document.getElementById("emptyState");
+    const resetAllBtn = document.getElementById("resetAllBtn");
+    const filteredCountStat = document.getElementById("filteredCountStat");
+
+    const studyModal = document.getElementById("studyModal");
+    const closeModalBtn = document.getElementById("closeModalBtn");
+    const modalMissionBadge = document.getElementById("modalMissionBadge");
+    const modalYearBadge = document.getElementById("modalYearBadge");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalSummary = document.getElementById("modalSummary");
+    const modalTags = document.getElementById("modalTags");
+    const modalExternalLink = document.getElementById("modalExternalLink");
+
+    function triggerLinkEntranceFeedback(title) {
+      warpToastTitle.textContent = title;
+      warpLinkToast.classList.remove("hidden", "warp-toast-active");
+      void warpLinkToast.offsetWidth;
+      warpLinkToast.classList.add("warp-toast-active");
+      setTimeout(() => {
+        warpLinkToast.classList.add("hidden");
+      }, 1650);
+    }
+
+    function renderCategoryPills() {
+      categoryPills.innerHTML = "";
+      quickKeywords.forEach(keyword => {
+        const isActive = activeKeyword.toLowerCase() === keyword.toLowerCase();
+        const btn = document.createElement("button");
+        btn.textContent = keyword;
+        btn.className = isActive
+          ? "px-3.5 py-1.5 rounded-full text-xs font-mono font-bold bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 shadow-[0_0_18px_rgba(0,229,255,0.5)] transition transform scale-105 cursor-pointer"
+          : "px-3.5 py-1.5 rounded-full text-xs font-mono bg-slate-950/80 hover:bg-slate-900 text-slate-200 border border-slate-700/80 hover:border-cyan-400/60 transition cursor-pointer";
+
+        btn.addEventListener("click", () => {
+          activeKeyword = keyword;
+          renderCategoryPills();
+          renderCards();
+        });
+        categoryPills.appendChild(btn);
+      });
+    }
+
+    // Quita acentos y mayusculas para comparar. TODO: busqueda por similitud (Pruebas/similitud.py)
+    function normalizeText(text) {
+      return String(text || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+    }
+
+    function getFilteredData() {
+      const q = normalizeText(searchQuery);
+      const groups = queryGroups(searchQuery);
+
+      let filtered = researchData.filter(item => {
+        const matchesPill =
+          activeKeyword === "All" ||
+          item.tags.some(t => t.toLowerCase() === activeKeyword.toLowerCase()) ||
+          item.mission.toLowerCase().includes(activeKeyword.toLowerCase());
+
+        if (!matchesPill) return false;
+        if (!q) return true;
+
+        item._score = similarityScore(item, groups); // 0 = no match, 1 = exact
+        return item._score > 0;
+      });
+
+      if (q && sortBy === "featured") filtered.sort((a, b) => b._score - a._score); // most similar first
+
+      if (sortBy === "newest") {
+        filtered.sort((a, b) => b.startYear - a.startYear);
+      } else if (sortBy === "oldest") {
+        filtered.sort((a, b) => a.startYear - b.startYear);
+      } else if (sortBy === "az") {
+        filtered.sort((a, b) => a.title.localeCompare(b.title));
+      }
+
+      return filtered;
+    }
+
+    function renderCards() {
+      const items = getFilteredData();
+      renderDidYouMean();
+
+      filteredCountStat.textContent = items.length;
+
+      researchGrid.innerHTML = "";
+
+      if (items.length === 0) {
+        researchGrid.classList.add("hidden");
+        emptyState.classList.remove("hidden");
+        return;
+      }
+
+      researchGrid.classList.remove("hidden");
+      emptyState.classList.add("hidden");
+
+      items.forEach((item, idx) => {
+        const card = document.createElement("article");
+        card.className = "space-card rounded-2xl p-6 flex flex-col justify-between cursor-pointer group relative overflow-hidden card-stagger";
+        card.style.animationDelay = `${Math.min(idx * 0.065, 0.55)}s`;
+
+        const topGlow = `<div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-cyan-400 via-blue-500 to-orange-400 opacity-80 group-hover:opacity-100 transition-opacity"></div>`;
+
+        const tagsHtml = item.tags
+          .map(tag => `<span class="px-2.5 py-1 rounded-md text-[11px] font-mono bg-slate-950/85 text-cyan-200/90 border border-slate-800 group-hover:border-cyan-400/40 transition">${tag}</span>`)
+          .join("");
+
+        card.innerHTML = `
+          ${topGlow}
+          <div class="-mx-6 -mt-6 mb-5 h-44 relative overflow-hidden bg-slate-950">
+            <div class="absolute inset-0 flex items-center justify-center"><div class="w-12 h-12 rounded-full zero-g-sphere"></div></div>
+            ${item.image ? `<img src="${item.image}" alt="${item.mission}" loading="lazy" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" onerror="this.style.display='none'" />` : ""}
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-transparent to-transparent"></div>
+            <span class="absolute left-4 bottom-3 text-[11px] font-mono text-slate-200/95 tracking-wide">${item.platform}</span>
+          </div>
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-3.5">
+              <span class="px-2.5 py-1 rounded-lg text-xs font-mono font-semibold bg-cyan-500/15 text-cyan-200 border border-cyan-400/35">
+                ${item.mission}
+              </span>
+              <span class="flex items-center gap-2">
+                ${searchQuery.trim() && item._score ? `<span class="px-2 py-0.5 rounded-md bg-orange-500/15 border border-orange-400/40 text-orange-200 text-[11px] font-mono">${Math.round(item._score * 100)}% match</span>` : ""}
+                <span class="text-xs font-mono text-slate-300">${item.year}</span>
+              </span>
+            </div>
+
+            <h2 class="text-lg font-semibold text-white group-hover:text-cyan-300 transition-colors leading-snug mb-2.5">
+              ${item.title}
+            </h2>
+
+            <p class="text-slate-300/90 text-sm leading-relaxed line-clamp-3 mb-4">
+              ${item.summary}
+            </p>
+          </div>
+
+          <div>
+            <div class="flex flex-wrap gap-1.5 mb-5">
+              ${tagsHtml}
+            </div>
+
+            <div class="pt-3.5 border-t border-slate-800/80 flex items-center justify-between gap-2">
+              <span class="text-xs font-mono text-slate-300 group-hover:text-orange-300 transition-colors flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-orange-400 group-hover:scale-125 transition-transform"></span>
+                Click to inspect
+              </span>
+
+              <a
+                href="${item.url}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="study-direct-link neon-link-btn inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/20 hover:bg-gradient-to-r hover:from-cyan-400 hover:to-blue-500 text-cyan-200 hover:text-slate-950 border border-cyan-400/45"
+              >
+                <span>PSI Record</span>
+                <svg class="w-3.5 h-3.5 arrow-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        `;
+
+        const directLink = card.querySelector(".study-direct-link");
+        directLink.addEventListener("click", (e) => {
+          e.stopPropagation();
+          triggerLinkEntranceFeedback(item.mission);
+        });
+
+        card.addEventListener("click", () => openModal(item));
+        researchGrid.appendChild(card);
+      });
+    }
+
+    // =========================================================================
+    // PHOTO GALLERY: slider inside each investigation window
+    // =========================================================================
+    let gallerySlides = [], galleryIndex = 0, touchStartX = null;
+
+    function setupGallery(item, extra) {
+      // Photos come from datos.js (extra.gallery). If it has none, use the single card photo
+      gallerySlides = (extra.gallery && extra.gallery.length) ? extra.gallery
+        : (item.image ? [{ image: item.image, caption: extra.image_caption || "" }] : []);
+      const track = document.getElementById("galleryTrack");
+      track.innerHTML = "";
+      gallerySlides.forEach(slide => {
+        const cell = document.createElement("div");
+        cell.className = "w-full h-full shrink-0 relative";
+        const img = document.createElement("img");
+        img.src = slide.image;
+        img.alt = slide.caption || item.mission;
+        img.loading = "lazy";
+        img.className = "absolute inset-0 w-full h-full object-cover";
+        img.onerror = () => { img.style.display = "none"; };
+        cell.appendChild(img);
+        track.appendChild(cell);
+      });
+      const many = gallerySlides.length > 1;
+      document.getElementById("galleryPrev").classList.toggle("hidden", !many);
+      document.getElementById("galleryNext").classList.toggle("hidden", !many);
+      const dots = document.getElementById("galleryDots");
+      dots.innerHTML = "";
+      if (many) gallerySlides.forEach((_, i) => {
+        const dot = document.createElement("button");
+        dot.setAttribute("aria-label", `Photo ${i + 1}`);
+        dot.addEventListener("click", () => showSlide(i));
+        dots.appendChild(dot);
+      });
+      showSlide(0);
+    }
+
+    function showSlide(i) {
+      if (!gallerySlides.length) { document.getElementById("modalImageCredit").textContent = ""; return; }
+      galleryIndex = (i + gallerySlides.length) % gallerySlides.length; // wraps around at both ends
+      document.getElementById("galleryTrack").style.transform = `translateX(-${galleryIndex * 100}%)`;
+      const slide = gallerySlides[galleryIndex];
+      const count = gallerySlides.length > 1 ? ` (${galleryIndex + 1}/${gallerySlides.length})` : "";
+      document.getElementById("modalImageCredit").textContent = slide.caption ? `Image: NASA · ${slide.caption}${count}` : "";
+      [...document.getElementById("galleryDots").children].forEach((dot, n) => {
+        dot.className = "h-2 rounded-full transition-all " + (n === galleryIndex ? "w-5 bg-cyan-300" : "w-2 bg-slate-500/80 hover:bg-slate-300");
+      });
+    }
+
+    document.getElementById("galleryPrev").addEventListener("click", () => showSlide(galleryIndex - 1));
+    document.getElementById("galleryNext").addEventListener("click", () => showSlide(galleryIndex + 1));
+    document.addEventListener("keydown", e => {
+      if (!document.getElementById("studyModal").classList.contains("open")) return;
+      if (e.target.closest && e.target.closest("input, textarea, select")) return; // typing in the chat must not move the slides
+      if (e.key === "ArrowLeft") showPageSlide(pageSlideIndex - 1);
+      if (e.key === "ArrowRight") showPageSlide(pageSlideIndex + 1);
+    });
+    const galleryBox = document.getElementById("modalGallery");
+    galleryBox.addEventListener("touchstart", e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    galleryBox.addEventListener("touchend", e => {
+      if (touchStartX === null) return;
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 40) showSlide(galleryIndex + (dx < 0 ? 1 : -1)); // swipe left = next
+      touchStartX = null;
+    });
+
+    let currentPageItem = null;
+    function updatePageSummary(item) {
+      // Beginners read the short summary; the others read the long one
+      const extra = EXTRA[item.id.toUpperCase()] || {};
+      modalSummary.textContent = (userLevel === "beginner" || !extra.summary) ? item.summary : extra.summary;
+    }
+
+    function openModal(item, fromHistory) {
+      modalMissionBadge.textContent = item.mission;
+      modalYearBadge.textContent = `PERIOD: ${item.year}`;
+      modalTitle.textContent = item.title;
+      const extraInfo = EXTRA[item.id.toUpperCase()] || {};
+      currentPageItem = item;
+      updatePageSummary(item);
+      setupGallery(item, extraInfo);
+      pageSlideIndex = 0; // every page starts at the banner
+      renderModalDetails(item);
+      pageSlides().forEach(slide => { slide.scrollTop = 0; });
+      modalExternalLink.href = item.url;
+      document.getElementById("modalDataBtn").onclick = () => openTableFor(item);
+      modalExternalLink.onclick = () => triggerLinkEntranceFeedback(item.mission);
+
+      modalTags.innerHTML = item.tags
+        .map(tag => `<span class="px-3 py-1 rounded-lg text-xs font-mono bg-cyan-500/15 text-cyan-200 border border-cyan-400/35">${tag}</span>`)
+        .join("");
+
+      document.getElementById("modalPageId").textContent = item.id.toUpperCase();
+      studyModal.classList.add("open");
+      studyModal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      // The page gets its own address (#psi-26): the browser Back button closes it
+      if (!fromHistory) history.pushState({ psi: true }, "", "#" + item.id.toLowerCase());
+    }
+
+    function closeModal(keepHistory) {
+      if (!studyModal.classList.contains("open")) return;
+      studyModal.classList.remove("open");
+      studyModal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      if (PSI_HASH.test(location.hash)) {
+        if (!keepHistory && history.state && history.state.psi) history.back(); // go back to the archive address
+        else history.replaceState(null, "", location.pathname + location.search);
+      }
+    }
+
+    // Open / close the page when the address changes (Back, Forward or a shared link)
+    const PSI_HASH = /^#psi-\d+$/i;
+    function syncPageWithAddress() {
+      const item = PSI_HASH.test(location.hash) ? researchData.find(i => "#" + i.id.toLowerCase() === location.hash.toLowerCase()) : null;
+      if (item) openModal(item, true);
+      else if (studyModal.classList.contains("open")) {
+        studyModal.classList.remove("open");
+        studyModal.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+      }
+    }
+    window.addEventListener("popstate", syncPageWithAddress);
+
+    searchInput.addEventListener("input", (e) => {
+      searchQuery = e.target.value;
+      clearSearchBtn.classList.toggle("hidden", searchQuery.length === 0);
+      renderCards();
+    });
+
+    clearSearchBtn.addEventListener("click", () => {
+      searchQuery = "";
+      searchInput.value = "";
+      clearSearchBtn.classList.add("hidden");
+      searchInput.focus();
+      renderCards();
+    });
+
+    sortSelect.addEventListener("change", (e) => {
+      sortBy = e.target.value;
+      renderCards();
+    });
+
+    resetAllBtn.addEventListener("click", () => {
+      activeKeyword = "All";
+      searchQuery = "";
+      searchInput.value = "";
+      clearSearchBtn.classList.add("hidden");
+      renderCategoryPills();
+      renderCards();
+    });
+
+    closeModalBtn.addEventListener("click", () => closeModal());
+    document.getElementById("modalNextSlide").addEventListener("click", () => showPageSlide(1));
+    document.getElementById("slidePrev").addEventListener("click", () => showPageSlide(pageSlideIndex - 1));
+    document.getElementById("slideNext").addEventListener("click", () => showPageSlide(pageSlideIndex + 1));
+    // Swipe left / right changes the slide (not inside the photo gallery or a table that scrolls sideways)
+    let slideTouchX = null;
+    const slideViewport = document.getElementById("slideViewport");
+    slideViewport.addEventListener("touchstart", e => {
+      slideTouchX = e.target.closest("#modalGallery, .overflow-auto, .overflow-x-auto") ? null : e.touches[0].clientX;
+    }, { passive: true });
+    slideViewport.addEventListener("touchend", e => {
+      if (slideTouchX === null) return;
+      const dx = e.changedTouches[0].clientX - slideTouchX;
+      if (Math.abs(dx) > 60) showPageSlide(pageSlideIndex + (dx < 0 ? 1 : -1));
+      slideTouchX = null;
+    });
+
+    document.getElementById("replayIntroBtn").addEventListener("click", playCinematicIntro);
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        closeModal();
+      }
+    });
+
+    // =========================================================================
+    // CHAT: asks a local Ollama model. "Experiments" answers from datos.js; "CSV data" asks chatbot_dataframes.py.
+    // =========================================================================
+    const OLLAMA_URL = " https://sim-people-satisfaction-connection.trycloudflare.com";   // where Ollama runs (teammate's computer; use http://localhost:11434 if it runs on this one)
+    const OLLAMA_MODEL = "qwen3.5:4b";             // change it if you use another model
+    const WARM_UP_MODEL = true;                    // loads the model while the intro plays
+    const CHAT_SUGGESTIONS = ["Which experiment is about fuel droplets?", "What did BASS find about nitrogen?", "Which variables measure oxygen?"];
+    let chatHistory = [], chatBusy = false;
+
+    function buildChatContext() {
+      // One compact block per experiment: short enough for a 4B model with an 8k context
+      const blocks = (DASH_DATA.experiments || []).map(e => {
+        const inputs = e.variables.filter(v => v.role === "input").map(v => v.col).join(", ");
+        const outputs = e.variables.filter(v => v.role === "output").map(v => v.col).join(", ");
+        return [`## ${e.id} · ${e.acronym} · ${e.name} (${e.period}, ${e.platform})`,
+          `Summary: ${e.summary}`, `Why it matters: ${e.safety_insight || e.why_it_matters}`,
+          `Findings: ${(e.findings || []).map(f => f.text).join(" | ")}`,
+          `Input variables: ${inputs}`, `Output variables: ${outputs}`].join("\n");
+      });
+      const level = LEVELS[userLevel || "intermediate"];
+      return "You are Flamita, a friendly guide for a dashboard about flames in microgravity. " + level.style + " " +
+        "You answer questions about 7 NASA microgravity combustion investigations (PSI-25, 26, 68, 69, 98, 99, 100). " +
+        "Use ONLY the data below. If the answer is not in it, say so. Reply in the language of the question, briefly, and mention the PSI id.\n\n" + blocks.join("\n\n");
+    }
+
+    function addChatMessage(role, text) {
+      const box = document.getElementById("chatMessages");
+      const bubble = document.createElement("div");
+      bubble.className = role === "user"
+        ? "ml-auto max-w-[85%] px-3 py-2 rounded-xl rounded-br-sm bg-cyan-500/20 border border-cyan-400/35 text-cyan-50"
+        : "mr-auto max-w-[92%] px-3 py-2 rounded-xl rounded-bl-sm bg-slate-900 border border-slate-800 text-slate-200 leading-relaxed whitespace-pre-wrap";
+      bubble.textContent = text; // always as text, never as HTML
+      box.appendChild(bubble);
+      box.scrollTop = box.scrollHeight;
+      return bubble;
+    }
+
+    // -------------------------------------------------------------------------
+    // CSV DATA MODE: the question goes to chatbot_dataframes.py, which asks Ollama
+    // for pandas code and runs it on the CSV files of Prefinal/<PSI>/Procesado.
+    // Start it with:  py -I -X utf8 chatbot_dataframes.py servidor
+    // -------------------------------------------------------------------------
+    const CHATBOT_URL = "http://localhost:8000";   // where chatbot_dataframes.py runs
+    let chatMode = "experiments";                  // "experiments" (datos.js) or "data" (CSV files)
+    let chatDataScope = "";                        // "PSI-68" = only that investigation, "" = all of them
+    let dataHistory = [];                          // last [question, code] pairs, so follow-up questions work
+
+    function dataSuggestions() {
+      // Example questions built from the real columns of the first table of the investigation
+      const scope = EXTRACTED[chatDataScope] || Object.values(EXTRACTED)[0];
+      const table = scope && [...scope.tables].sort((a, b) => b.rows - a.rows)[0];
+      if (!table) return [];
+      const numeric = table.columns.filter(c => c.type === "number" && c.min !== c.max);
+      const list = ["How many rows does each table have?"];
+      if (numeric[0]) list.push(`What is the maximum ${numeric[0].name}?`);
+      if (numeric[1]) list.push(`What is the average ${numeric[1].name}?`);
+      return list;
+    }
+
+    function renderChatChips(questions) {
+      const chips = document.getElementById("chatChips");
+      chips.innerHTML = "";
+      questions.forEach(question => {
+        const chip = document.createElement("button");
+        chip.className = "px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-[11px] text-cyan-200 text-left transition";
+        chip.textContent = question;
+        chip.addEventListener("click", () => askChat(question));
+        chips.appendChild(chip);
+      });
+    }
+
+    function updateModeChips() {
+      document.querySelectorAll("[data-chat-mode]").forEach(chip => {
+        const on = chip.dataset.chatMode === chatMode;
+        chip.className = "px-2.5 py-1 rounded-lg border text-[11px] transition " +
+          (on ? "bg-cyan-500/20 border-cyan-400/60 text-cyan-100" : "bg-slate-900 border-slate-700/80 text-slate-300 hover:border-cyan-400/50");
+      });
+      const scope = document.getElementById("chatScope");
+      scope.classList.toggle("hidden", chatMode !== "data");
+      scope.value = chatDataScope;
+      document.getElementById("chatInput").placeholder = chatMode === "data"
+        ? `Ask about the ${chatDataScope || "extracted"} CSV data...` : "Ask Flamita about any experiment...";
+      document.getElementById("chatModelLabel").textContent = `Local model · ${OLLAMA_MODEL}` + (chatMode === "data" ? " · pandas on CSV" : "");
+    }
+
+    function setChatMode(mode, scope) {
+      const changed = mode !== chatMode || (scope !== undefined && scope !== chatDataScope);
+      chatMode = mode;
+      if (scope !== undefined) chatDataScope = scope;
+      updateModeChips();
+      if (!changed) return;
+      if (mode === "data") {
+        dataHistory = [];
+        const tables = chatDataScope ? ((EXTRACTED[chatDataScope] || {}).tables || []) : Object.values(EXTRACTED).flatMap(e => e.tables);
+        addChatMessage("bot", tables.length
+          ? `CSV data mode · ${chatDataScope || "all investigations"}: ${tables.length} table${tables.length === 1 ? "" : "s"} available` +
+            (tables.length <= 6 ? ` (${tables.map(t => t.file).join(", ")})` : "") + ". I answer by running pandas on the real files, so the numbers come from the data."
+          : `There are no extracted CSV tables for ${chatDataScope || "this dashboard"} yet.`);
+        renderChatChips(dataSuggestions());
+      } else {
+        addChatMessage("bot", "Back to the experiments: ask me about any of the 7 investigations.");
+        renderChatChips(CHAT_SUGGESTIONS);
+      }
+    }
+
+    async function askData(question, bubble) {
+      // Returns true when the server answered (even if the answer is "I could not answer")
+      bubble.textContent = "Running pandas on the CSV files...";
+      try {
+        const response = await fetch(CHATBOT_URL + "/preguntar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pregunta: question, investigacion: chatDataScope || null, historial: dataHistory.slice(-3) })
+        });
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        const answer = await response.json();
+        bubble.textContent = answer.respuesta; // always as text, never as HTML
+        if (answer.codigo) {
+          dataHistory.push([question, answer.codigo]);
+          // The pandas code and the tables it used, folded, so anyone can check where the number came from
+          const details = document.createElement("details");
+          details.className = "mt-2 text-[11px] font-mono text-slate-400";
+          const summary = document.createElement("summary");
+          summary.className = "cursor-pointer hover:text-cyan-200";
+          summary.textContent = "How I got it (pandas code)";
+          const code = document.createElement("pre");
+          code.className = "mt-1 p-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-300 overflow-x-auto whitespace-pre";
+          code.textContent = (answer.tablas || []).map(name => `# ${name}`).join("\n") + "\n" + answer.codigo;
+          details.append(summary, code);
+          bubble.appendChild(details);
+        }
+      } catch (error) {
+        bubble.textContent = `I can't reach the CSV chatbot at ${CHATBOT_URL}. Start it from the dash folder with:  py -I -X utf8 chatbot_dataframes.py servidor`;
+      }
+      document.getElementById("chatMessages").scrollTop = document.getElementById("chatMessages").scrollHeight;
+    }
+
+    async function askChat(question) {
+      if (chatBusy || !question.trim()) return;
+      if (chatMode === "data") {
+        chatBusy = true;
+        document.getElementById("chatSendBtn").disabled = true;
+        document.getElementById("chatChips").innerHTML = "";
+        addChatMessage("user", question);
+        await askData(question, addChatMessage("bot", "..."));
+        chatBusy = false;
+        document.getElementById("chatSendBtn").disabled = false;
+        return;
+      }
+      chatBusy = true;
+      document.getElementById("chatSendBtn").disabled = true;
+      document.getElementById("chatChips").innerHTML = "";
+      addChatMessage("user", question);
+      chatHistory.push({ role: "user", content: question });
+      const bubble = addChatMessage("bot", "...");
+      let answer = "";
+      try {
+        const response = await fetch(OLLAMA_URL + "/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: OLLAMA_MODEL, stream: true, think: false,
+            options: { num_ctx: 8192, temperature: 0.3 },
+            messages: [{ role: "system", content: buildChatContext() }, ...chatHistory.slice(-6)]
+          })
+        });
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let pending = "";
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          pending += decoder.decode(value, { stream: true });
+          const lines = pending.split("\n");
+          pending = lines.pop(); // the last line may be incomplete
+          for (const line of lines) {
+            if (!line.trim()) continue;
+            const part = JSON.parse(line);
+            if (part.message && part.message.content) {
+              answer += part.message.content;
+              bubble.textContent = answer.replace(/<think>[\s\S]*?(<\/think>|$)/g, "").trim() || "...";
+              document.getElementById("chatMessages").scrollTop = document.getElementById("chatMessages").scrollHeight;
+            }
+          }
+        }
+        chatHistory.push({ role: "assistant", content: answer });
+      } catch (error) {
+        chatHistory.pop(); // the question that failed is not kept
+        bubble.textContent = `I can't reach Ollama at ${OLLAMA_URL}. Check that Ollama is running and that the OLLAMA_ORIGINS variable is set to * (then restart Ollama).`;
+      }
+      chatBusy = false;
+      document.getElementById("chatSendBtn").disabled = false;
+    }
+
+    function setChatOpen(open) {
+      document.getElementById("chatPanel").classList.toggle("open", open);
+      document.getElementById("chatLauncher").setAttribute("aria-expanded", String(open));
+      document.getElementById("chatHint").classList.remove("show");
+      if (open) document.getElementById("chatInput").focus();
+    }
+
+    function updateLevelChips() {
+      document.querySelectorAll("[data-chat-level]").forEach(chip => {
+        const on = chip.dataset.chatLevel === userLevel;
+        chip.className = "px-2.5 py-1 rounded-lg border text-[11px] transition " +
+          (on ? "bg-orange-500/20 border-orange-400/60 text-orange-100" : "bg-slate-900 border-slate-700/80 text-slate-300 hover:border-cyan-400/50");
+      });
+    }
+
+    let shownLevel = null;
+    function setUserLevel(level) {
+      // Changing the level from the chat also changes the PSI page that is open
+      userLevel = shownLevel = level;
+      updateLevelChips();
+      addChatMessage("bot", LEVELS[level].reply);
+      if (studyModal.classList.contains("open") && currentPageItem) {
+        updatePageSummary(currentPageItem);
+        renderModalDetails(currentPageItem);
+      }
+    }
+
+    let chatGreeted = false, chatHintShown = false;
+    function afterIntro() {
+      // Called when the intro ends: the Flamita button fades in
+      document.getElementById("chatWidget").classList.add("visible");
+      updateLevelChips();
+      if (!chatGreeted) {
+        chatGreeted = true;
+        addChatMessage("bot", userLevel
+          ? `Welcome! I'll explain things at the ${LEVELS[userLevel].label} level. Ask me about any of the 7 investigations.`
+          : "Hi, I'm Flamita! Pick your level above so I can adapt my answers, then ask me about any of the 7 investigations.");
+      } else if (userLevel && userLevel !== shownLevel) {
+        addChatMessage("bot", `Level changed to ${LEVELS[userLevel].label}. ${LEVELS[userLevel].reply}`);
+      }
+      shownLevel = userLevel;
+      if (!chatHintShown) {
+        chatHintShown = true;
+        setTimeout(() => document.getElementById("chatHint").classList.add("show"), 1500);
+        setTimeout(() => document.getElementById("chatHint").classList.remove("show"), 9000);
+      }
+    }
+
+    function initChat() {
+      renderChatChips(CHAT_SUGGESTIONS);
+      // "Ask about": experiments (datos.js) or the extracted CSV files of one investigation
+      const scope = document.getElementById("chatScope");
+      [["", "All PSI"], ...Object.keys(EXTRACTED).map(id => [id, id])].forEach(([value, label]) => {
+        const option = document.createElement("option");
+        option.value = value; option.textContent = label;
+        scope.appendChild(option);
+      });
+      scope.addEventListener("change", () => setChatMode("data", scope.value));
+      document.querySelectorAll("[data-chat-mode]").forEach(chip => chip.addEventListener("click", () =>
+        // From an open PSI page, "CSV data" starts with the tables of that investigation
+        setChatMode(chip.dataset.chatMode, chip.dataset.chatMode === "data" && !chatDataScope && studyModal.classList.contains("open") && currentPageItem && EXTRACTED[currentPageItem.id.toUpperCase()] ? currentPageItem.id.toUpperCase() : undefined)));
+      updateModeChips();
+      document.querySelectorAll("[data-chat-level]").forEach(chip => chip.addEventListener("click", () => setUserLevel(chip.dataset.chatLevel)));
+      updateLevelChips();
+      document.getElementById("chatLauncher").addEventListener("click", () => setChatOpen(!document.getElementById("chatPanel").classList.contains("open")));
+      document.getElementById("chatCloseBtn").addEventListener("click", () => setChatOpen(false));
+      const input = document.getElementById("chatInput");
+      const send = () => { const q = input.value; input.value = ""; askChat(q); };
+      document.getElementById("chatSendBtn").addEventListener("click", send);
+      input.addEventListener("keydown", e => { if (e.key === "Enter") send(); });
+    }
+
+    window.addEventListener("load", () => {
+      initDynamicPlasmaBackground();
+      renderCategoryPills();
+      renderCards();
+      initDataExplorer();
+      renderOverview();
+      initChat();
+      syncPageWithAddress(); // a link like index.html#psi-26 opens that page directly
+      playCinematicIntro();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "_nota": "De donde salio cada foto de dashboard/img (todas de documentos de la NASA ya descargados). SAFFIRE no tiene fotos reales en los documentos locales: solo graficas, tablas y un dibujo CAD del equipo (SAFFIRE Objectives PDF, pagina 2).",
+  "PSI-25": {"file": "img/PSI-25.jpg", "caption": "Blue microgravity flame on a clear PMMA rod in BASS-II, illustrating the PMMA flammability boundary.", "source": "data/recursos_reto/documentos/BASS_NTRS/BASS-II_Results_2014_presentacion_NTRS-20160000593.pdf", "page": 19, "kind": "flame"},
+  "PSI-26": {"file": "img/PSI-26.jpg", "caption": "PMMA sphere burning in BASS aboard the ISS in 17% oxygen, with occasional vapor jetting.", "source": "data/raw/PSI-26/Presentations/PSI-26_Presentations_BASS_Overview of Recent ISS Results.pdf", "page": 63, "kind": "flame"},
+  "PSI-68": {"file": "img/PSI-68.jpg", "caption": "MDCA avionics package, one of two MDCA-FLEX-2 hardware packages that interface with the Combustion Integrated Rack.", "source": "data/raw/PSI-68/Engineering Documents/PSI-68_Engineering Documents_FLEX-2 Hardware Presentation.ppt", "page": 6, "kind": "hardware"},
+  "PSI-69": {"file": "img/PSI-69.jpg", "caption": "ISS camera view inside the FLEX chamber: methanol droplet held between opposed needles, test point FLEX-145.", "source": "data/raw/PSI-69/Presentations/PSI-69_Presentations_20130010979.pdf", "page": 9, "kind": "hardware"},
+  "PSI-98": {"error": "No real photo in the local SAFFIRE-I documents."},
+  "PSI-99": {"error": "No real photo in the local SAFFIRE-II documents."},
+  "PSI-100": {"error": "No real photo in the local SAFFIRE-III documents."}
+}

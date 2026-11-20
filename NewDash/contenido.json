@@ -1,0 +1,232 @@
+{
+  "_nota": "Contenido en ingles del dashboard. Lo editamos a mano. construir_datos.py lo junta con las fichas de PSI, las tablas y los archivos descargados y genera datos.js.",
+  "experimentos": [
+    {
+      "id": "PSI-69",
+      "acronym": "FLEX",
+      "name": "Flame Extinguishment Experiment",
+      "headline": "When does a burning fuel droplet go out?",
+      "platform": "ISS · Combustion Integrated Rack (MDCA)",
+      "family": "Liquid fuel droplets",
+      "period_source": "table",
+      "summary": "FLEX ignited single droplets of methanol and heptane, free-floating or held on a thin fiber, inside the Combustion Integrated Rack of the International Space Station. Oxygen, pressure and the suppressant gases CO2 and helium were varied to map when a flame survives and when it goes out, including the Limiting Oxygen Index (LOI): the lowest oxygen that still supports a flame.",
+      "why_it_matters": "It measures how much oxygen a fuel fire needs and how well CO2 or helium put it out in microgravity, a direct input for designing fire suppression on spacecraft.",
+      "readiness": {"level": "High", "reason": "274 tests, each with its conditions and numeric results (burning rate, burn time, extinction diameter) plus how the flame ended."},
+      "tests": 274,
+      "tests_note": "274 droplet tests in the PSI experimental table.",
+      "table": "PSI-69_Experimental table_FLEX.csv",
+      "tags": ["droplet", "liquid fuel", "methanol", "heptane", "extinction", "limiting oxygen index", "LOI", "suppressant", "CO2", "helium", "cool flame", "burning rate", "d2 law", "CIR", "MDCA"],
+      "variables": [
+        {"role": "input", "col": "Fuel", "meaning": "Fuel burned: Methanol or Heptane", "unit": "text"},
+        {"role": "input", "col": "Ambient pressure; mmHg", "meaning": "Chamber pressure (760 mmHg = 1 atm)", "unit": "mmHg"},
+        {"role": "input", "col": "O initial ambient composition; mole fraction", "meaning": "Oxygen (O2) fraction at the start (0.21 = air)", "unit": "mole fraction"},
+        {"role": "input", "col": "N initial ambient composition; mole fraction", "meaning": "Nitrogen (N2) fraction at the start", "unit": "mole fraction"},
+        {"role": "input", "col": "CO initial ambient composition; mole fraction", "meaning": "CO2 fraction at the start (suppressant). The header lost the '2'; the TestSheets call it CO2 Mole Fraction", "unit": "mole fraction"},
+        {"role": "input", "col": "He initial ambient composition; mole fraction", "meaning": "Helium fraction at the start (suppressant)", "unit": "mole fraction"},
+        {"role": "input", "col": "Droplet initial diameter; mm", "meaning": "Droplet size at ignition (D0)", "unit": "mm"},
+        {"role": "output", "col": "Test end", "meaning": "How the flame ended: Extinction, Disruption (droplet broke apart) or Completion (burned out)", "unit": "class"},
+        {"role": "output", "col": "Burning rate; mm", "meaning": "Burning-rate constant K from the d² law. The header says mm, but the TestSheets give kavg in mm²/s", "unit": "mm²/s"},
+        {"role": "output", "col": "Burn time; s", "meaning": "How long the flame lasted", "unit": "s"},
+        {"role": "output", "col": "Visible flame extinction diameter; mm", "meaning": "Droplet size when the visible flame went out (Dext); empty if it burned out or broke apart", "unit": "mm"},
+        {"role": "id", "col": "FLEX Test #, FLEX Identifier, Test Date, Test GMT", "meaning": "Test number, chamber test code, date and time (GMT)", "unit": ""}
+      ],
+      "data_notes": [
+        "Open the CSV with encoding latin-1.",
+        "Fiber (yes/no) and gas temperature are only in the 272 TestSheet files, not in the table.",
+        "Burn time is roughly D0²/K by physics: do not use one output to predict another."
+      ],
+      "key_docs": ["FLEX_Test_Plan", "FLEX_EIRD", "Cool Flames in Space"]
+    },
+    {
+      "id": "PSI-25",
+      "acronym": "BASS-II",
+      "name": "Burning and Suppression of Solids II",
+      "headline": "How do real spacecraft materials burn in slow airflow?",
+      "platform": "ISS · Microgravity Science Glovebox",
+      "family": "Solid materials",
+      "period_source": "table",
+      "summary": "BASS-II burned solid materials (PMMA acrylic films, slabs and rods, SIBAL cotton-fiberglass fabric, Nomex and a candle) in a small wind tunnel inside the ISS Microgravity Science Glovebox. Airflow (up to 40 cm/s) and oxygen (lowered below 21 % by adding nitrogen) were varied to study ignition, flame growth, spread and extinction in opposed and concurrent flow.",
+      "why_it_matters": "It tests whether NASA's Earth-based upward-burning material test (NASA-STD-6001 Test 1) is really the worst case for fires in space.",
+      "readiness": {"level": "Medium", "reason": "129 tests with gas measurements before and after each burn (O2, CO2, CO); whether the flame went out is only written in the report's appendix."},
+      "tests": 129,
+      "tests_note": "129 tests in the PSI experimental table.",
+      "table": "PSI-25_Experimental table_BASS-II.csv",
+      "tags": ["solid fuel", "PMMA", "acrylic", "SIBAL", "fabric", "Nomex", "candle", "flame spread", "opposed flow", "concurrent flow", "extinction", "blowoff", "heat release", "carbon monoxide", "glovebox", "MSG", "NASA-STD-6001"],
+      "variables": [
+        {"role": "input", "col": "PI", "meaning": "Principal investigator; tells the test family (thin PMMA films, PMMA slabs, PMMA rods, SIBAL fabric, Nomex and candle)", "unit": "text"},
+        {"role": "input", "col": "Fuel Sample Material", "meaning": "Material, thickness and width in one text (e.g. 100 micron PMMA film 2 cm wide)", "unit": "text"},
+        {"role": "input", "col": "Flow restrictor", "meaning": "Perforated plate at the air inlet: 0 = most flow, 2 = least", "unit": "0 / 1 / 2"},
+        {"role": "input", "col": "Air display", "meaning": "Air speed in the duct; several values mean it was changed during the test", "unit": "cm/s"},
+        {"role": "input", "col": "Calibrated  initial O2 % by vol", "meaning": "Oxygen at the start, calibrated with the ISS air analyzer (MCA)", "unit": "% vol"},
+        {"role": "input", "col": "Initial CO2 % by vol", "meaning": "Carbon dioxide at the start", "unit": "% vol"},
+        {"role": "input", "col": "Initial CO (ppm)", "meaning": "Carbon monoxide at the start", "unit": "ppm"},
+        {"role": "output", "col": "Calibrated final O2 % by vol", "meaning": "Oxygen at the end (initial minus final = oxygen consumed by the fire)", "unit": "% vol"},
+        {"role": "output", "col": "Final CO2 % by vol", "meaning": "Carbon dioxide at the end", "unit": "% vol"},
+        {"role": "output", "col": "Final CO (ppm)", "meaning": "Carbon monoxide at the end, a toxic gas ('OR' = over range, above 1000 ppm)", "unit": "ppm"},
+        {"role": "output", "col": "(derived) Heat release", "meaning": "The Summary Report computes it from the oxygen consumed: 13.1 kJ per gram of O2", "unit": "W"},
+        {"role": "id", "col": "Test #, Date, GMT, Sample #", "meaning": "Test code (PI initial + number), date, day of year, sample number", "unit": ""}
+      ],
+      "data_notes": [
+        "Split Fuel Sample Material into material, thickness and width before modeling.",
+        "Ignition, spread and extinction notes are in Appendix A of the BASS-II Summary Report, not in the CSV."
+      ],
+      "key_docs": ["Summary Report", "ReadMe", "Test.Matrices"]
+    },
+    {
+      "id": "PSI-26",
+      "acronym": "BASS",
+      "name": "Burning and Suppression of Solids",
+      "headline": "Can a nitrogen jet put out a fire on board?",
+      "platform": "ISS · Microgravity Science Glovebox",
+      "family": "Solid materials",
+      "period_source": "table",
+      "summary": "The first BASS campaign compared how realistic, thicker fuels burn in microgravity with NASA's Earth-based material test, and checked whether a jet of nitrogen, an inert suppressant similar to the one used on the ISS, can put the flames out. Samples included SIBAL cotton-fiberglass fabric, PMMA spheres and slabs, wax, candles and Nomex, burned in opposed and concurrent airflow.",
+      "why_it_matters": "It links material flammability in space to the tests used on Earth and checks an inert-gas way to put out fires in a crewed vehicle.",
+      "readiness": {"level": "Partial", "reason": "122 tests; the CSV only has dates and materials. Conditions are in the As Run Test Matrix spreadsheet and results are free-text observations."},
+      "tests": 122,
+      "tests_note": "122 rows in the PSI experimental table.",
+      "table": "PSI-26_Experimental table_BASS.csv",
+      "tags": ["solid fuel", "SIBAL", "fabric", "PMMA", "sphere", "wax", "candle", "Nomex", "nitrogen", "suppression", "extinguisher", "flame spread", "opposed flow", "concurrent flow", "NASA-STD-6001", "glovebox", "MSG"],
+      "variables": [
+        {"role": "input", "col": "Fuel Sample Material", "meaning": "Material and size (e.g. SIBAL 2 cm, PMMA sphere 1 cm)", "unit": "text"},
+        {"role": "input", "col": "Flow restrictor (As Run matrix)", "meaning": "Air inlet plate: 0 = most flow, 2 = least", "unit": "0 / 2"},
+        {"role": "input", "col": "Air display (As Run matrix)", "meaning": "Air speed; adjustable from 5 to 50 cm/s according to the SRD", "unit": "cm/s"},
+        {"role": "input", "col": "GN2 display (As Run matrix)", "meaning": "Nitrogen suppressant flow (0 to 500 cc/min according to the SRD)", "unit": "cc/min"},
+        {"role": "input", "col": "O2 % by volume (As Run matrix)", "meaning": "Cabin oxygen; stored as a fraction (0.221 = 22.1 %)", "unit": "fraction"},
+        {"role": "input", "col": "pressure, atm / CO2, mm Hg (As Run matrix)", "meaning": "Cabin pressure and CO2 partial pressure", "unit": "atm / mmHg"},
+        {"role": "output", "col": "Test Observations and Anomalies (As Run matrix)", "meaning": "What happened: ignition, spread, extinction by nitrogen, burn time, soot", "unit": "text"},
+        {"role": "id", "col": "Date, GMT, As Run Test #, Test #, Sample #", "meaning": "Date, day of year and test / sample numbers", "unit": ""}
+      ],
+      "data_notes": [
+        "The useful table is Science Documents / As Run_Test Matrix.xlsx, sheet 'as run matrix' (headers in row 3).",
+        "Do not share the Planned_Test Matrix spreadsheet: its second row contains what look like system credentials."
+      ],
+      "key_docs": ["SRD_BASS", "As Run_Test Matrix", "Overview of Recent ISS Results"]
+    },
+    {
+      "id": "PSI-68",
+      "acronym": "FLEX-2",
+      "name": "Flame Extinguishment Experiment 2",
+      "headline": "Droplets of real-world fuels and fuel mixtures",
+      "platform": "ISS · Combustion Integrated Rack (MDCA)",
+      "family": "Liquid fuel droplets",
+      "period_source": "ficha",
+      "summary": "FLEX-2 extended FLEX to fuels and conditions closer to real engines: pure and two-component droplets of fuels such as decane, octane, heptane and iso-octane, two-droplet arrays and droplets moving through a slow flow. It was designed to give benchmark data on burning rate, flame extinction and soot formation to validate droplet combustion models.",
+      "why_it_matters": "Its benchmark data help validate the combustion models used to predict how liquid fuels burn and go out, in space and in engines on Earth.",
+      "readiness": {"level": "Summary only", "reason": "Its PSI table lists the test ranges (8 rows), not per-test results; per-test files hold gas mixtures, chamber readings and radiometer signals."},
+      "tests": 0,
+      "tests_note": "The PSI table has 8 rows of test ranges, not individual tests.",
+      "table": "PSI-68_Experimental table_Flex2.csv",
+      "tags": ["droplet", "liquid fuel", "bi-component", "fuel mixture", "decane", "octane", "iso-octane", "heptane", "soot", "droplet array", "convective flow", "extinction", "CIR", "MDCA"],
+      "variables": [
+        {"role": "input", "col": "Sample (Fuel Type)", "meaning": "Fuel or fuel mixture tested", "unit": "text"},
+        {"role": "input", "col": "Initial Droplet Diameter (mm)", "meaning": "Droplet size range at ignition", "unit": "mm"},
+        {"role": "input", "col": "Ambient Gas Mixture", "meaning": "Gas around the droplet (O2/N2 or O2/He)", "unit": "text"},
+        {"role": "input", "col": "Oxygen Mole Fraction", "meaning": "Oxygen levels tested", "unit": "mole fraction"},
+        {"role": "input", "col": "Ambient Pressure (atm)", "meaning": "Chamber pressures tested", "unit": "atm"},
+        {"role": "input", "col": "Flow Velocity (cm/s)", "meaning": "Slow flow imposed on the droplet", "unit": "cm/s"},
+        {"role": "output", "col": "(per-test files) Radiometer readings", "meaning": "Flame radiation at 100 readings per second; flame duration could be computed from it", "unit": "signal"},
+        {"role": "output", "col": "(SRD) Burning rate, extinction diameter, soot shell", "meaning": "What the experiment measures according to its Science Requirements Document; not tabulated", "unit": ""}
+      ],
+      "data_notes": [
+        "Per-test files: *_Mixture.txt (gas mixture), *_Chamber_Readings.txt (pressure, temperature), *_Radiometer_Readings.txt.",
+        "For droplet models, use FLEX: same hardware, with results per test."
+      ],
+      "key_docs": ["SRD", "Engineering Requir", "DoD"]
+    },
+    {
+      "id": "PSI-98",
+      "acronym": "SAFFIRE-I",
+      "name": "Spacecraft Fire Safety Experiment I",
+      "headline": "A large fire, safely, inside a cargo ship",
+      "platform": "Cygnus cargo vehicle (after leaving the ISS)",
+      "family": "Large-scale fire",
+      "period_source": "manual",
+      "period": "2016",
+      "summary": "Saffire-I lit a large fire, a 94 × 40.6 cm sheet of SIBAL cotton-fiberglass fabric, inside the uncrewed Cygnus cargo vehicle after it left the ISS, so no crew was at risk. The flame spread with a 20 cm/s concurrent airflow while two cameras, thermocouples, radiometers, O2 and CO2 sensors, pressure sensors and anemometers recorded how the fire grew.",
+      "why_it_matters": "It shows how fast a realistic, large fire grows in microgravity, something too dangerous to test with a crew on board.",
+      "readiness": {"level": "Low", "reason": "Only 2 samples, but about 11,000 sensor readings per sample (temperatures, radiation, O2, CO2)."},
+      "tests": 2,
+      "tests_note": "2 samples; rows F1/F2 in the table are camera reference images, not tests.",
+      "table": "PSI-98_Experimental table_SAFFIRE-1.csv",
+      "tags": ["large-scale fire", "Cygnus", "SIBAL", "fabric", "cotton", "fire growth", "flame spread", "concurrent flow", "thermocouple", "radiometer", "oxygen", "CO2", "sensor data"],
+      "variables": [
+        {"role": "input", "col": "Material", "meaning": "Sample material (SIBAL fabric: 75 % cotton, 25 % fiberglass)", "unit": "text"},
+        {"role": "input", "col": "Sample Thickness (cm), Sample Length (cm), Sample Width (cm)", "meaning": "Sample size; length and width are swapped in this table (the sample is 94 cm long, 40.6 cm wide)", "unit": "cm"},
+        {"role": "input", "col": "Air Flow (cm/s)", "meaning": "Air speed in the flow duct", "unit": "cm/s"},
+        {"role": "input", "col": "Percent O2", "meaning": "Oxygen in the vehicle", "unit": "%"},
+        {"role": "input", "col": "Ignition Power (W), Ignition Time (s)", "meaning": "Igniter power and how long it was on", "unit": "W, s"},
+        {"role": "input", "col": "Flow Direction", "meaning": "Concurrent: the flame moves with the airflow; Opposed: against it", "unit": "text"},
+        {"role": "output", "col": "Burn Time (s)", "meaning": "How long the fire lasted", "unit": "s"},
+        {"role": "output", "col": "(sensor files) O2, CO2, Plume Temp, Sample Temp, Radiometer", "meaning": "Fire growth over time: gas levels, gas and sample temperatures, flame radiation", "unit": "%, °C, mW/cm²"}
+      ],
+      "data_notes": [
+        "Remove the F1C1 / F2C1 rows: they are camera images before and after the flow, not tests.",
+        "Sensor time series: Raw Data / Reduced Gravity / *Sensor*.xlsx, sheet Calibrated Data."
+      ],
+      "key_docs": ["Objectives", "Readme", "Operations"]
+    },
+    {
+      "id": "PSI-99",
+      "acronym": "SAFFIRE-II",
+      "name": "Spacecraft Fire Experiment II",
+      "headline": "Nine materials: space flame vs. Earth test",
+      "platform": "Cygnus cargo vehicle (after leaving the ISS)",
+      "family": "Large-scale fire",
+      "period_source": "ficha",
+      "summary": "Saffire-II burned nine 5 × 29 cm samples (SIBAL fabric, silicone, flat and structured PMMA, and PMMA with Nomex) inside Cygnus, at 20 or 30 cm/s in concurrent or opposed flow. The samples have the same size as NASA's Earth flammability screening test, so their burn length and spread rate in microgravity can be compared with the same materials tested on the ground.",
+      "why_it_matters": "It checks whether materials approved with the 1-g screening test behave the same way in microgravity.",
+      "readiness": {"level": "Low", "reason": "9 samples with microgravity vs. 1-g burn length and spread rate: good for comparison charts, too few to train a model."},
+      "tests": 9,
+      "tests_note": "9 samples on one card.",
+      "table": "PSI-99_Experimental table_SAFFIRE-2.csv",
+      "tags": ["large-scale fire", "Cygnus", "nine samples", "silicone", "PMMA", "Nomex", "SIBAL", "flame spread rate", "burn length", "microgravity vs 1-g", "NASA-STD-6001", "opposed flow", "concurrent flow"],
+      "variables": [
+        {"role": "input", "col": "Material", "meaning": "Sample material", "unit": "text"},
+        {"role": "input", "col": "Samle Thickness, Sample Length, Sample Width (cm)", "meaning": "Sample size (thickness in mm, length and width in cm)", "unit": "mm / cm"},
+        {"role": "input", "col": "Air Flow (cm/s)", "meaning": "Air speed", "unit": "cm/s"},
+        {"role": "input", "col": "Percent O2 (Note 1)", "meaning": "Oxygen in the vehicle", "unit": "%"},
+        {"role": "input", "col": "Ignition Power (W), Ignition Time (s)", "meaning": "Igniter power and on-time", "unit": "W, s"},
+        {"role": "input", "col": "Flow Direction", "meaning": "Concurrent or opposed flame spread", "unit": "text"},
+        {"role": "output", "col": "Burn Time (s)", "meaning": "How long the sample burned ('Insignificant' = barely burned)", "unit": "s"},
+        {"role": "output", "col": "?-g Burn Length / ?-g Spread Length", "meaning": "Burn length and spread rate in microgravity (the '?' is a lost µ)", "unit": "cm, mm/s"},
+        {"role": "output", "col": "1-g Burn Length / 1-g Spread Rate", "meaning": "The same measurements in the ground test, for comparison", "unit": "cm, mm/s"}
+      ],
+      "data_notes": [
+        "Units are written inside the cells ('20 cm/s', '0.27 mm'): strip them before using the numbers.",
+        "Rows that start with F are camera reference images, not tests."
+      ],
+      "key_docs": ["Objectives", "Readme"]
+    },
+    {
+      "id": "PSI-100",
+      "acronym": "SAFFIRE-III",
+      "name": "Spacecraft Fire Experiment III",
+      "headline": "The large fabric fire, with more wind",
+      "platform": "Cygnus cargo vehicle (after leaving the ISS)",
+      "family": "Large-scale fire",
+      "period_source": "manual",
+      "period": "2017",
+      "summary": "Saffire-III repeated the large SIBAL fabric fire (94 × 40.6 cm) inside Cygnus at a faster 30 cm/s airflow, instead of the 20 cm/s of Saffire-I, with concurrent or opposed flow. Cameras, thermocouples, radiometers and O2, CO2 and pressure sensors recorded the fire.",
+      "why_it_matters": "Comparing it with Saffire-I shows how ventilation speed changes the growth of a large fire in microgravity.",
+      "readiness": {"level": "Low", "reason": "2 samples; its table lists the setup only. The fire behaviour is in the sensor time series and images."},
+      "tests": 2,
+      "tests_note": "2 samples.",
+      "table": "PSI-100_Experimental table_SAFFIRE-3.csv",
+      "tags": ["large-scale fire", "Cygnus", "SIBAL", "fabric", "cotton", "30 cm/s", "ventilation", "fire growth", "opposed flow", "concurrent flow", "sensor data"],
+      "variables": [
+        {"role": "input", "col": "Material", "meaning": "Sample material (SIBAL fabric)", "unit": "text"},
+        {"role": "input", "col": "Sample Thickness, Sample Length, Sample Width", "meaning": "Sample size, with units inside the cells", "unit": "cm"},
+        {"role": "input", "col": "Air Flow", "meaning": "Air speed (30 cm/s)", "unit": "cm/s"},
+        {"role": "input", "col": "Direction", "meaning": "Concurrent or opposed flame spread", "unit": "text"},
+        {"role": "output", "col": "(sensor files) O2, CO2, Plume Temp, Sample Temp, Radiometer", "meaning": "Fire growth over time", "unit": "%, °C, mW/cm²"},
+        {"role": "id", "col": "Sample Number, Camera 1, Camera 2", "meaning": "Sample and the image folders that belong to it", "unit": ""}
+      ],
+      "data_notes": [
+        "The table has no burn time column; use the sensor files.",
+        "Image timestamps in the image directory files are from June 2017."
+      ],
+      "key_docs": ["Objectives", "Readme", "Operations"]
+    }
+  ]
+}

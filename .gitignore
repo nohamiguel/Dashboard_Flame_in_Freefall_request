@@ -1,0 +1,5 @@
+# Has credentials, never upload
+**/PSI-26_Science Documents_Planned_Test Matrix.xlsx
+
+# Python cache
+__pycache__/
